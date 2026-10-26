@@ -11,6 +11,7 @@ import { MOCK_GUESTS, MOCK_FUNCTIONS, MOCK_WEDDINGS } from "@/lib/mock-data";
 import { Guest, WeddingFunction } from "@/types/models";
 import { validateGuestCsv, exportGuestsToCsv } from "@/lib/csv";
 import { createGuestAction, bulkImportGuestsAction, deleteGuestAction } from "@/lib/actions/guests";
+import { InviteShareModal } from "@/components/dashboard/invite-share-modal";
 
 export default function GuestsPage() {
   const [guests, setGuests] = React.useState<Guest[]>(MOCK_GUESTS);
@@ -19,6 +20,7 @@ export default function GuestsPage() {
   const [selectedSide, setSelectedSide] = React.useState<string>("all");
   const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
   const [isCsvModalOpen, setIsCsvModalOpen] = React.useState(false);
+  const [shareGuest, setShareGuest] = React.useState<Guest | null>(null);
   const [csvText, setCsvText] = React.useState("");
   const [csvTargetEvents, setCsvTargetEvents] = React.useState<string[]>([]);
   const [csvErrors, setCsvErrors] = React.useState<Array<{ rowNumber: number; errors: string[] }>>([]);
@@ -288,10 +290,10 @@ export default function GuestsPage() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => alert(`Unique Token: ${guest.invitationToken}\nRSVP URL: /invite/${guest.invitationToken}`)}
+                    onClick={() => setShareGuest(guest)}
                     className="text-xs font-semibold text-gold-700 hover:text-gold-800"
                   >
-                    RSVP
+                    Share / RSVP
                   </Button>
                   <button
                     onClick={() => handleDelete(guest.id)}
@@ -436,6 +438,17 @@ export default function GuestsPage() {
           </div>
         </form>
       </Dialog>
+
+      {/* WhatsApp Share & Reminder Dialog */}
+      <InviteShareModal
+        isOpen={Boolean(shareGuest)}
+        onClose={() => setShareGuest(null)}
+        guest={shareGuest}
+        functions={functions}
+        weddingTitle={activeWedding.title}
+        startDate={activeWedding.startDate}
+        city={activeWedding.primaryCity}
+      />
     </div>
   );
 }

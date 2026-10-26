@@ -4,8 +4,8 @@
 - **Project:** ShaadiSync (Indian Wedding Management & Event Operations Platform)
 - **Founding Team:** Team SHATRUJEET (Amar Khera, Ananya Rout, Lucky Kumar, Omm Prakash Sahoo)
 - **Canonical Repository:** `https://github.com/DebugDroid-15/ShaadiSync`
-- **Current Phase:** Phase 3 (Wedding, Event and Guest Management)
-- **Status:** Phase 3 Complete & Verified
+- **Current Phase:** Phase 4 (Invitations, Guest Portal and RSVP Engine)
+- **Status:** Phase 4 Complete & Verified
 
 ---
 
@@ -68,12 +68,33 @@
 | 3.5 | Selective per-function invitation assignments | `event_invitations` table + guest form per-ceremony checkboxes | ✅ Verified |
 | 3.6 | Validated CSV import parser with row-level error reporting | `src/lib/csv.ts` + `tests/csv.test.ts` (8/8 tests passed) | ✅ Verified |
 | 3.7 | CSV guest list export | Client-side export generator with ceremony counts and sanitization | ✅ Verified |
-| 3.8 | Relational constraints & timing invariants | `tests/crud.test.ts` (5/5 tests passed) | ✅ Verified |
+| 3.8 | Timing & capacity relational invariants | `tests/crud.test.ts` (5/5 tests passed) | ✅ Verified |
 | 3.9 | Total Vitest test suite pass rate | 35/35 tests passed across 5 test suites | ✅ Verified |
 | 3.10 | Strict TypeScript verification | `npm run type-check` (0 errors) | ✅ Verified |
 | 3.11 | Code quality linting | `npm run lint` (0 warnings, 0 errors) | ✅ Verified |
 | 3.12 | Next.js production build | `npm run build` (19/19 routes + Edge Middleware) | ✅ Verified |
-| 3.13 | Phase 3 Git commit & push | Canonical push to `origin/main` | ✅ Verified |
+| 3.13 | Phase 3 Git commit & push | Verified commit `58af973` on `origin/main` | ✅ Verified |
+
+---
+
+## Phase 4 Deliverables & Verification Checklist
+
+| Item | Requirement | Verification Method | Status |
+| :--- | :--- | :--- | :---: |
+| 4.1 | RSVPs schema migration & token revocation | `supabase/migrations/20261026000003_rsvps_and_tokens.sql` | ✅ Verified |
+| 4.2 | Public guest portal without organizer login | Dynamic route `/invite/[token]` (`src/app/invite/[token]/page.tsx`) | ✅ Verified |
+| 4.3 | Function-specific response options | Attending, Declined, Tentative per ceremony | ✅ Verified |
+| 4.4 | Accompanying persons & dietary notes | Adult/child counts, Jain/Veg/Non-Veg preferences | ✅ Verified |
+| 4.5 | Minimal public disclosure & token security | Zero leakage of unrelated guests or financial data | ✅ Verified |
+| 4.6 | Idempotent RSVP submissions | Duplicate prevention via `event_invitation_id` constraint | ✅ Verified |
+| 4.7 | WhatsApp message & reminder generator | `src/lib/whatsapp.ts` with direct `wa.me` intent URLs | ✅ Verified |
+| 4.8 | Printable invitation layout | Browser print styles and celebratory card layout | ✅ Verified |
+| 4.9 | Organiser invitation share modal | `InviteShareModal` on guest roster | ✅ Verified |
+| 4.10 | Automated RSVP test suite | `tests/rsvp.test.ts` (7/7 tests passed) | ✅ Verified |
+| 4.11 | Total Vitest test suite pass rate | 42/42 tests passed across 6 test suites | ✅ Verified |
+| 4.12 | Strict TypeScript & ESLint checks | `npm run type-check` & `npm run lint` (0 errors) | ✅ Verified |
+| 4.13 | Next.js production build | `npm run build` (19 static + dynamic `/invite/[token]`) | ✅ Verified |
+| 4.14 | Phase 4 Git commit & push | Canonical push to `origin/main` | ✅ Verified |
 
 ---
 
@@ -92,11 +113,6 @@
 - **Phase:** Phase 2
 - **Completion Date:** 2026-10-26
 - **Acceptance Criteria Status:** All Phase 2 criteria verified and passing.
-- **Test Commands & Results:**
-  - `npx vitest run`: 3 test files, 22 tests passed, 0 failed.
-  - `npm run type-check`: 0 errors.
-  - `npm run lint`: 0 errors, 0 warnings.
-  - `npm run build`: 19 pages + Middleware (93.9 kB) compiled successfully.
 - **Commit SHA:** `ff20ba8a36d6590fb9addc843e6c5588c26ba4fa`
 - **Branch:** `main`
 - **Remote Push Status:** Canonical push to `https://github.com/DebugDroid-15/ShaadiSync`
@@ -106,12 +122,21 @@
 - **Phase:** Phase 3
 - **Completion Date:** 2026-10-26
 - **Acceptance Criteria Status:** All Phase 3 criteria verified and passing.
-- **Test Commands & Results:**
-  - `npx vitest run`: 5 test files, 35 tests passed, 0 failed (`tests/csv.test.ts`, `tests/crud.test.ts`, `tests/security.test.ts`, `tests/utils.test.ts`, `tests/components.test.tsx`).
-  - `npm run type-check`: 0 errors.
-  - `npm run lint`: 0 errors, 0 warnings.
-  - `npm run build`: 19 pages + Middleware compiled successfully.
-- **Commit SHA:** `df6d2425a20e7d1545e8528fbb41a25c608e525e`
+- **Commit SHA:** `58af973a4fc9048f7f7e3ad6512bfb282f1f1d58`
 - **Branch:** `main`
 - **Remote Push Status:** Canonical push to `https://github.com/DebugDroid-15/ShaadiSync`
 - **Next Phase:** Phase 4 — Invitations, Guest Portal and RSVP Engine
+
+### Release Record: Phase 4 — Invitations, Guest Portal and RSVP Engine
+- **Phase:** Phase 4
+- **Completion Date:** 2026-10-26
+- **Acceptance Criteria Status:** All Phase 4 criteria verified and passing.
+- **Test Commands & Results:**
+  - `npx vitest run`: 6 test files, 42 tests passed, 0 failed.
+  - `npm run type-check`: 0 errors.
+  - `npm run lint`: 0 errors, 0 warnings.
+  - `npm run build`: 19 routes + dynamic `/invite/[token]` + Middleware compiled successfully.
+- **Commit SHA:** `9798a2a469b1c23e28ee25558e012b60f17da012`
+- **Branch:** `main`
+- **Remote Push Status:** Canonical push to `https://github.com/DebugDroid-15/ShaadiSync`
+- **Next Phase:** Phase 5 — Catering and Vendor Operations

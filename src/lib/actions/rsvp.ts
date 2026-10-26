@@ -1,0 +1,249 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import crypto from "crypto";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { isSupabaseConfigured } from "@/lib/supabase/client";
+import { submitRsvpFormSchema, type SubmitRsvpForm } from "@/lib/validations/rsvp";
+import { MOCK_GUESTS, MOCK_FUNCTIONS, MOCK_WEDDINGS } from "@/lib/mock-data";
+
+export interface PublicInvitationData {
+  isValid: boolean;
+  error?: string;
+  guest?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    phone?: string | null;
+    dietaryPreference: string;
+    isVip: boolean;
+    side: string;
+  };
+  householdMembers?: Array<{
+    id: string;
+    firstName: string;
+    lastName: string;
+    ageGroup: string;
+  }>;
+  wedding?: {
+    title: string;
+    coupleBrideName: string;
+    coupleGroomName: string;
+    startDate: string;
+    endDate: string;
+    primaryCity: string;
+  };
+  events?: Array<{
+    id: string;
+    invitationId: string;
+    name: string;
+    eventType: string;
+    startTime: string;
+    endTime: string;
+    venueName: string;
+    venueAddress: string;
+    dressCode?: string | null;
+    status: "invited" | "attending" | "declined" | "tentative";
+  }>;
+}
+
+/**
+ * Fetch guest invitation details by token with minimal public disclosure.
+ */
+export async function getInvitationByTokenAction(token: string): Promise<PublicInvitationData> {
+  if (!token || token.trim().length < 5) {
+    return { isValid: false, error: "Invalid invitation token." };
+  }
+
+  if (!isSupabaseConfigured()) {
+    // Fictional dev fallback matching MOCK_GUESTS
+    const mockGuest = MOCK_GUESTS.find((g) => g.invitationToken === token) || MOCK_GUESTS[0];
+    const mockWedding = MOCK_WEDDINGS[0];
+    const invitedEvents = MOCK_FUNCTIONS.filter((f) => mockGuest.invitedFunctionIds.includes(f.id));
+
+    return {
+      isValid: true,
+      guest: {
+        id: mockGuest.id,
+        firstName: mockGuest.firstName,
+        lastName: mockGuest.lastName,
+        phone: mockGuest.phone,
+        dietaryPreference: mockGuest.dietaryPreference,
+        isVip: mockGuest.isVip,
+        side: mockGuest.side,
+      },
+      wedding: {
+        title: mockWedding.title,
+        coupleBrideName: mockWedding.coupleBrideName,
+        coupleGroomName: mockWedding.coupleGroomName,
+        startDate: mockWedding.startDate,
+        endDate: mockWedding.endDate,
+        primaryCity: mockWedding.primaryCity,
+      },
+      events: invitedEvents.map((e) => ({
+        id: e.id,
+        invitationId: "mock-inv-" + e.id,
+        name: e.name,
+        eventType: e.eventType,
+        startTime: e.startTime,
+        endTime: e.endTime,
+        venueName: e.venueName,
+        venueAddress: e.venueAddress,
+        dressCode: e.dressCode,
+        status: "invited",
+      })),
+    };
+  }
+
+  const supabase = await createServerSupabaseClient();
+  if (!supabase) return { isValid: false, error: "Database client unavailable." };
+
+  // 1. Fetch guest record with unrevoked token check
+  const { data: guestData, error: guestError } = await (supabase.from("guests") as unknown as {
+    select: (q: string) => { eq: (col: string, val: string) => { single: () => Promise<{ data: any; error: any }> } };
+  })
+    .select("id, wedding_id, household_id, first_name, last_name, phone, dietary_pref, is_vip, side, token_revoked, token_expires_at, wedding:weddings(title, couple_bride_name, couple_groom_name, start_date, end_date, primary_city)")
+    .eq("invitation_token", token)
+    .single();
+
+  if (guestError || !guestData) {
+    return { isValid: false, error: "Invitation not found or link has expired." };
+  }
+
+  if (guestData.token_revoked) {
+    return { isValid: false, error: "This invitation link has been revoked by the organiser." };
+  }
+
+  if (guestData.token_expires_at && new Date(guestData.token_expires_at) < new Date()) {
+    return { isValid: false, error: "This invitation link has expired." };
+  }
+
+  // 2. Fetch specific invited functions only
+  const { data: invitations } = await (supabase.from("event_invitations") as unknown as {
+    select: (q: string) => { eq: (col: string, val: string) => Promise<{ data: any; error: any }> };
+  })
+    .select("id, status, event:events(id, name, event_type, start_time, end_time, venues(name, address), dress_code)")
+    .eq("guest_id", guestData.id);
+
+  const events = (invitations || []).map((inv: any) => ({
+    id: inv.event.id,
+    invitationId: inv.id,
+    name: inv.event.name,
+    eventType: inv.event.event_type,
+    startTime: inv.event.start_time,
+    endTime: inv.event.end_time,
+    venueName: inv.event.venues?.name || "Main Venue",
+    venueAddress: inv.event.venues?.address || "",
+    dressCode: inv.event.dress_code,
+    status: inv.status,
+  }));
+
+  return {
+    isValid: true,
+    guest: {
+      id: guestData.id,
+      firstName: guestData.first_name,
+      lastName: guestData.last_name,
+      phone: guestData.phone,
+      dietaryPreference: guestData.dietary_pref,
+      isVip: guestData.is_vip,
+      side: guestData.side,
+    },
+    wedding: {
+      title: guestData.wedding.title,
+      coupleBrideName: guestData.wedding.couple_bride_name,
+      coupleGroomName: guestData.wedding.couple_groom_name,
+      startDate: guestData.wedding.start_date,
+      endDate: guestData.wedding.end_date,
+      primaryCity: guestData.wedding.primary_city,
+    },
+    events,
+  };
+}
+
+/**
+ * Submit or update RSVP responses idempotently with accompanying headcount and dietary notes.
+ */
+export async function submitRsvpAction(payload: SubmitRsvpForm): Promise<{ success: boolean; error?: string }> {
+  const validation = submitRsvpFormSchema.safeParse(payload);
+  if (!validation.success) {
+    return { success: false, error: validation.error.errors[0].message };
+  }
+
+  const { data: valid } = validation;
+
+  if (!isSupabaseConfigured()) {
+    return { success: true };
+  }
+
+  const supabase = await createServerSupabaseClient();
+  if (!supabase) return { success: false, error: "Database client unavailable." };
+
+  for (const resp of valid.responses) {
+    const isAttending = resp.status === "attending";
+
+    // Update or insert rsvps row idempotently
+    const { error: rsvpError } = await (supabase.from("rsvps") as unknown as {
+      upsert: (values: any, opts: any) => Promise<{ error: any }>;
+    }).upsert(
+      {
+        event_invitation_id: resp.eventInvitationId,
+        attending: isAttending,
+        adult_count: isAttending ? Math.max(1, resp.adultCount) : 0,
+        child_count: isAttending ? resp.childCount : 0,
+        dietary_pref: resp.dietaryPref,
+        dietary_notes: resp.dietaryNotes || null,
+        accompanying_names: resp.accompanyingNames || null,
+        submitted_at: new Date().toISOString(),
+      },
+      { onConflict: "event_invitation_id" }
+    );
+
+    if (rsvpError) {
+      return { success: false, error: "Failed to record RSVP: " + rsvpError.message };
+    }
+
+    // Update event_invitations status
+    await (supabase.from("event_invitations") as unknown as {
+      update: (vals: any) => { eq: (col: string, val: string) => Promise<{ error: any }> };
+    })
+      .update({
+        status: resp.status,
+        responded_at: new Date().toISOString(),
+      })
+      .eq("id", resp.eventInvitationId);
+  }
+
+  revalidatePath(`/invite/${valid.token}`);
+  revalidatePath("/dashboard/catering");
+  revalidatePath("/dashboard");
+  return { success: true };
+}
+
+/**
+ * Revoke or regenerate high-entropy invitation token (Organiser action)
+ */
+export async function regenerateGuestTokenAction(guestId: string): Promise<{ success: boolean; newToken?: string; error?: string }> {
+  const newToken = "tok_" + crypto.randomBytes(8).toString("hex");
+
+  if (!isSupabaseConfigured()) {
+    return { success: true, newToken };
+  }
+
+  const supabase = await createServerSupabaseClient();
+  if (!supabase) return { success: false, error: "Database client unavailable." };
+
+  const { error } = await (supabase.from("guests") as unknown as {
+    update: (vals: any) => { eq: (col: string, val: string) => Promise<{ error: any }> };
+  })
+    .update({
+      invitation_token: newToken,
+      token_revoked: false,
+    })
+    .eq("id", guestId);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath("/dashboard/guests");
+  return { success: true, newToken };
+}

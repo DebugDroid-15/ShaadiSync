@@ -5,6 +5,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.4.0] - Phase 4 Invitations, Guest Portal & RSVP Engine - 2026-10-26
+### Added
+- Schema migration `20261026000003_rsvps_and_tokens.sql` introducing `rsvps` table, token revocation, expiration timestamps, and RLS policies.
+- Secure, zero-login public guest portal `/invite/[token]` providing function-by-function RSVP confirmations (Attending, Declined, Tentative).
+- Minimal public disclosure enforcement: exposes only the guest's household and their specific invited ceremonies.
+- Accompanying family member attendance count (adults/children) and dietary preference capture (Jain, Pure Veg, Non-Veg, Vegan, Allergies).
+- Idempotent RSVP submission handling preventing duplicate rows while recording updated headcounts and timestamps.
+- Zero-cost copyable WhatsApp invitation and reminder message generators (`src/lib/whatsapp.ts`) with direct `wa.me` intent links.
+- Printable invitation card layout with browser print styles.
+- Automated RSVP test suite `tests/rsvp.test.ts` (7 tests), expanding total test suite to 42 passed tests.
+
 ## [0.3.0] - Phase 3 Wedding, Event & Guest Management - 2026-10-26
 ### Added
 - Schema migration `20261026000002_functions_households_guests.sql` for venues, events/functions, households, guests, and event_invitations.
