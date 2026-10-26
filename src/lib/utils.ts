@@ -60,12 +60,13 @@ export function formatTime(dateString: string | Date | null | undefined): string
 export function calculateCateringGuarantee(
   confirmedAttendees: number,
   bufferPercentage: number = 10
-): { confirmed: number; bufferCount: number; guaranteedHeadcount: number } {
+): { confirmed: number; confirmedHeadcount: number; bufferCount: number; guaranteedHeadcount: number } {
   const safeConfirmed = Math.max(0, Math.floor(confirmedAttendees));
   const safeBuffer = Math.max(0, bufferPercentage);
   const bufferCount = Math.ceil((safeConfirmed * safeBuffer) / 100);
   return {
     confirmed: safeConfirmed,
+    confirmedHeadcount: safeConfirmed,
     bufferCount,
     guaranteedHeadcount: safeConfirmed + bufferCount,
   };

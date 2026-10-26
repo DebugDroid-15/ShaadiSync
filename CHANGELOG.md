@@ -5,7 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-## [0.4.0] - Phase 4 Invitations, Guest Portal & RSVP Engine - 2026-10-26
+## [0.5.0] - Phase 5 Catering & Vendor Operations - 2026-10-26
+### Added
+- Schema migration `20261026000004_catering_and_vendors.sql` introducing `vendors`, `vendor_assignments`, and `meal_plans` tables with database-generated `balance_due` column and Row Level Security (RLS) policies.
+- Dynamic Catering Headcount Engine distinguishing confirmed attendees (adults + children), pending RSVPs, organiser-approved safety buffer (+5% to +20%), proposed catering quantities, and locked caterer guarantees.
+- Explicit caterer guarantee sign-off workflow (`approveCateringGuaranteeAction`) preventing unapproved headcount commitments from being communicated to caterers or converted to actual orders.
+- Comprehensive Vendor Directory with standard Indian wedding categories (caterer, decorator, photographer, videographer, makeup, dj, priest, florist, transport, venue, other).
+- Multi-ceremony vendor assignments with service descriptions and scheduled arrival times.
+- Contract financial tracking per vendor: quoted price, agreed price, advance paid, and calculated balance due in standard Indian Rupee (₹ INR) precision.
+- Interactive Dashboard Views:
+  - `/dashboard/catering`: Interactive banquet planner with ceremony meal cards, live headcount engine, buffer slider (+5% to +20%), caterer guarantee lock button, and printable caterer sheet.
+  - `/dashboard/vendors`: Complete vendor directory table, filter by category/booking status, payment summary cards (Total Contracted, Advance Paid, Balance Due), and Add Vendor modal.
+- Automated test suite `tests/catering-vendors.test.ts` (9 tests), verifying headcount isolation, zero attendance handling, ceiling buffer rounding, advance payment validation invariants, and guarantee approvals, expanding test suite to 51 passed tests.
 ### Added
 - Schema migration `20261026000003_rsvps_and_tokens.sql` introducing `rsvps` table, token revocation, expiration timestamps, and RLS policies.
 - Secure, zero-login public guest portal `/invite/[token]` providing function-by-function RSVP confirmations (Attending, Declined, Tentative).

@@ -66,13 +66,66 @@ export interface CateringPlan {
   functionId: string;
   functionName: string;
   mealType: "breakfast" | "lunch" | "high_tea" | "dinner";
+  serviceStyle?: "buffet" | "seated_thali" | "cocktail" | "food_stations";
   catererName: string;
+  vendorId?: string;
   perPlateEstimate: number;
   totalInvited: number;
   confirmedRsvp: number;
+  pendingRsvp?: number;
   bufferPercentage: number;
+  proposedHeadcount?: number;
   guaranteedHeadcount: number;
+  isGuaranteeApproved: boolean;
+  approvedGuaranteeHeadcount?: number | null;
+  approvedBy?: string | null;
+  approvedAt?: string | null;
   estimatedTotalCost: number;
+  notes?: string | null;
+}
+
+export type VendorCategory =
+  | "caterer"
+  | "decorator"
+  | "photographer"
+  | "videographer"
+  | "makeup"
+  | "dj"
+  | "priest"
+  | "florist"
+  | "transport"
+  | "venue"
+  | "other";
+
+export type VendorBookingStatus =
+  | "inquiry"
+  | "quoted"
+  | "booked"
+  | "completed"
+  | "cancelled";
+
+export interface Vendor {
+  id: string;
+  weddingId: string;
+  businessName: string;
+  category: VendorCategory;
+  contactName: string;
+  phone: string;
+  email: string;
+  bookingStatus: VendorBookingStatus;
+  quotedPrice: number;
+  agreedPrice: number;
+  advancePaid: number;
+  balanceDue: number;
+  paymentDueDate?: string | null;
+  arrivalTime?: string | null;
+  notes?: string | null;
+  assignedEvents?: Array<{
+    eventId: string;
+    eventName: string;
+    serviceDescription?: string;
+    arrivalTime?: string;
+  }>;
 }
 
 export interface BudgetCategoryItem {

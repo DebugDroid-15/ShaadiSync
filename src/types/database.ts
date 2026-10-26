@@ -15,6 +15,21 @@ export type GuestCategoryEnum = "family" | "close_friend" | "colleague" | "vip";
 export type AgeGroupEnum = "adult" | "child";
 export type DietaryPrefEnum = "veg" | "jain" | "non_veg" | "vegan";
 export type InvitationStatusEnum = "invited" | "declined" | "confirmed" | "tentative";
+export type VendorCategoryEnum =
+  | "caterer"
+  | "decorator"
+  | "photographer"
+  | "videographer"
+  | "makeup"
+  | "dj"
+  | "priest"
+  | "florist"
+  | "transport"
+  | "venue"
+  | "other";
+export type VendorBookingStatusEnum = "inquiry" | "quoted" | "booked" | "completed" | "cancelled";
+export type MealTypeEnum = "breakfast" | "lunch" | "high_tea" | "dinner";
+export type ServiceStyleEnum = "buffet" | "seated_thali" | "cocktail" | "food_stations";
 
 export interface Database {
   public: {
@@ -314,6 +329,8 @@ export interface Database {
           allergies_notes: string | null;
           is_vip: boolean;
           invitation_token: string;
+          token_revoked: boolean;
+          token_expires_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -332,6 +349,8 @@ export interface Database {
           allergies_notes?: string | null;
           is_vip?: boolean;
           invitation_token: string;
+          token_revoked?: boolean;
+          token_expires_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -350,6 +369,8 @@ export interface Database {
           allergies_notes?: string | null;
           is_vip?: boolean;
           invitation_token?: string;
+          token_revoked?: boolean;
+          token_expires_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -385,6 +406,187 @@ export interface Database {
         };
         Relationships: [];
       };
+      rsvps: {
+        Row: {
+          id: string;
+          event_invitation_id: string;
+          attending: boolean;
+          adult_count: number;
+          child_count: number;
+          dietary_pref: DietaryPrefEnum;
+          dietary_notes: string | null;
+          accompanying_names: string | null;
+          submitted_at: string;
+          updated_at: string;
+          ip_hash: string | null;
+        };
+        Insert: {
+          id?: string;
+          event_invitation_id: string;
+          attending: boolean;
+          adult_count?: number;
+          child_count?: number;
+          dietary_pref?: DietaryPrefEnum;
+          dietary_notes?: string | null;
+          accompanying_names?: string | null;
+          submitted_at?: string;
+          updated_at?: string;
+          ip_hash?: string | null;
+        };
+        Update: {
+          id?: string;
+          event_invitation_id?: string;
+          attending?: boolean;
+          adult_count?: number;
+          child_count?: number;
+          dietary_pref?: DietaryPrefEnum;
+          dietary_notes?: string | null;
+          accompanying_names?: string | null;
+          submitted_at?: string;
+          updated_at?: string;
+          ip_hash?: string | null;
+        };
+        Relationships: [];
+      };
+      vendors: {
+        Row: {
+          id: string;
+          wedding_id: string;
+          business_name: string;
+          category: VendorCategoryEnum;
+          contact_name: string;
+          phone: string | null;
+          email: string | null;
+          booking_status: VendorBookingStatusEnum;
+          quoted_price: number;
+          agreed_price: number;
+          advance_paid: number;
+          balance_due: number;
+          payment_due_date: string | null;
+          arrival_time: string | null;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          wedding_id: string;
+          business_name: string;
+          category?: VendorCategoryEnum;
+          contact_name: string;
+          phone?: string | null;
+          email?: string | null;
+          booking_status?: VendorBookingStatusEnum;
+          quoted_price?: number;
+          agreed_price?: number;
+          advance_paid?: number;
+          payment_due_date?: string | null;
+          arrival_time?: string | null;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          wedding_id?: string;
+          business_name?: string;
+          category?: VendorCategoryEnum;
+          contact_name?: string;
+          phone?: string | null;
+          email?: string | null;
+          booking_status?: VendorBookingStatusEnum;
+          quoted_price?: number;
+          agreed_price?: number;
+          advance_paid?: number;
+          payment_due_date?: string | null;
+          arrival_time?: string | null;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      vendor_assignments: {
+        Row: {
+          id: string;
+          vendor_id: string;
+          event_id: string;
+          service_description: string | null;
+          arrival_time: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          vendor_id: string;
+          event_id: string;
+          service_description?: string | null;
+          arrival_time?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          vendor_id?: string;
+          event_id?: string;
+          service_description?: string | null;
+          arrival_time?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      meal_plans: {
+        Row: {
+          id: string;
+          event_id: string;
+          vendor_id: string | null;
+          meal_type: MealTypeEnum;
+          service_style: ServiceStyleEnum;
+          menu_description: string | null;
+          planned_per_plate_cost: number;
+          buffer_percentage: number;
+          is_guarantee_approved: boolean;
+          approved_guarantee_headcount: number | null;
+          approved_by: string | null;
+          approved_at: string | null;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          event_id: string;
+          vendor_id?: string | null;
+          meal_type?: MealTypeEnum;
+          service_style?: ServiceStyleEnum;
+          menu_description?: string | null;
+          planned_per_plate_cost?: number;
+          buffer_percentage?: number;
+          is_guarantee_approved?: boolean;
+          approved_guarantee_headcount?: number | null;
+          approved_by?: string | null;
+          approved_at?: string | null;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          event_id?: string;
+          vendor_id?: string | null;
+          meal_type?: MealTypeEnum;
+          service_style?: ServiceStyleEnum;
+          menu_description?: string | null;
+          planned_per_plate_cost?: number;
+          buffer_percentage?: number;
+          is_guarantee_approved?: boolean;
+          approved_guarantee_headcount?: number | null;
+          approved_by?: string | null;
+          approved_at?: string | null;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -402,6 +604,10 @@ export interface Database {
         Args: { target_wedding_id: string };
         Returns: boolean;
       };
+      get_guest_id_by_token: {
+        Args: { token: string };
+        Returns: string;
+      };
     };
     Enums: {
       org_role: OrgRole;
@@ -413,6 +619,10 @@ export interface Database {
       age_group_enum: AgeGroupEnum;
       dietary_pref_enum: DietaryPrefEnum;
       invitation_status_enum: InvitationStatusEnum;
+      vendor_category_enum: VendorCategoryEnum;
+      vendor_booking_status_enum: VendorBookingStatusEnum;
+      meal_type_enum: MealTypeEnum;
+      service_style_enum: ServiceStyleEnum;
     };
     CompositeTypes: {
       [_ in never]: never;
