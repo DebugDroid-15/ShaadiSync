@@ -5,7 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-## [0.5.0] - Phase 5 Catering & Vendor Operations - 2026-10-26
+## [0.6.0] - Phase 6 Budget, Expenses & Financial Reporting - 2026-10-27
+### Added
+- Schema migration `20261026000005_budget_expenses_payments.sql` introducing `budget_allocations`, `expenses`, `payments`, and `financial_audit_logs` tables with constraints and Row Level Security (RLS) policies.
+- Non-duplicative financial reconciliation engine (`getBudgetSummaryAction`) preventing double-counting between vendor contracts and linked expense records.
+- Comprehensive payment voucher records supporting advance tokens, milestone payments, final settlements, refunds, and adjustments.
+- Audit history logging for financial creations, updates, and balance adjustments via `financial_audit_logs`.
+- Interactive `/dashboard/budget` view with planned-vs-actual variance tracking, category allocation tables, individual expense/contract rosters, payment voucher ledger, and client-side CSV ledger export.
+- Standard Indian Rupee (₹ INR) precision calculations with lakh/crore delimiters and variance alerts (surplus/deficit).
+- Automated test suite `tests/budget-expenses.test.ts` (8 tests) validating monetary formatting, budget variance, expense validation, refund handling, and vendor reconciliation, expanding total suite to 59 passed tests.
 ### Added
 - Schema migration `20261026000004_catering_and_vendors.sql` introducing `vendors`, `vendor_assignments`, and `meal_plans` tables with database-generated `balance_due` column and Row Level Security (RLS) policies.
 - Dynamic Catering Headcount Engine distinguishing confirmed attendees (adults + children), pending RSVPs, organiser-approved safety buffer (+5% to +20%), proposed catering quantities, and locked caterer guarantees.

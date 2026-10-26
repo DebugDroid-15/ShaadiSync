@@ -30,6 +30,19 @@ export type VendorCategoryEnum =
 export type VendorBookingStatusEnum = "inquiry" | "quoted" | "booked" | "completed" | "cancelled";
 export type MealTypeEnum = "breakfast" | "lunch" | "high_tea" | "dinner";
 export type ServiceStyleEnum = "buffet" | "seated_thali" | "cocktail" | "food_stations";
+export type ExpenseCategoryEnum =
+  | "venue"
+  | "catering"
+  | "decor"
+  | "photography"
+  | "entertainment"
+  | "attire_makeup"
+  | "transport_logistics"
+  | "invitations_gifts"
+  | "priest_rituals"
+  | "miscellaneous";
+export type PaymentModeEnum = "bank_transfer" | "upi" | "cash" | "cheque" | "card" | "other";
+export type PaymentTypeEnum = "advance" | "milestone" | "final" | "refund" | "correction";
 
 export interface Database {
   public: {
@@ -584,6 +597,177 @@ export interface Database {
           notes?: string | null;
           created_at?: string;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      budget_allocations: {
+        Row: {
+          id: string;
+          wedding_id: string;
+          event_id: string | null;
+          category: ExpenseCategoryEnum;
+          allocated_amount: number;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          wedding_id: string;
+          event_id?: string | null;
+          category: ExpenseCategoryEnum;
+          allocated_amount?: number;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          wedding_id?: string;
+          event_id?: string | null;
+          category?: ExpenseCategoryEnum;
+          allocated_amount?: number;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      expenses: {
+        Row: {
+          id: string;
+          wedding_id: string;
+          event_id: string | null;
+          vendor_id: string | null;
+          category: ExpenseCategoryEnum;
+          title: string;
+          description: string | null;
+          estimated_amount: number;
+          actual_amount: number;
+          is_paid: boolean;
+          invoice_number: string | null;
+          due_date: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          wedding_id: string;
+          event_id?: string | null;
+          vendor_id?: string | null;
+          category?: ExpenseCategoryEnum;
+          title: string;
+          description?: string | null;
+          estimated_amount?: number;
+          actual_amount?: number;
+          is_paid?: boolean;
+          invoice_number?: string | null;
+          due_date?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          wedding_id?: string;
+          event_id?: string | null;
+          vendor_id?: string | null;
+          category?: ExpenseCategoryEnum;
+          title?: string;
+          description?: string | null;
+          estimated_amount?: number;
+          actual_amount?: number;
+          is_paid?: boolean;
+          invoice_number?: string | null;
+          due_date?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      payments: {
+        Row: {
+          id: string;
+          wedding_id: string;
+          vendor_id: string | null;
+          expense_id: string | null;
+          amount: number;
+          payment_type: PaymentTypeEnum;
+          payment_mode: PaymentModeEnum;
+          payment_date: string;
+          reference_number: string | null;
+          paid_by_name: string | null;
+          notes: string | null;
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          wedding_id: string;
+          vendor_id?: string | null;
+          expense_id?: string | null;
+          amount: number;
+          payment_type?: PaymentTypeEnum;
+          payment_mode?: PaymentModeEnum;
+          payment_date?: string;
+          reference_number?: string | null;
+          paid_by_name?: string | null;
+          notes?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          wedding_id?: string;
+          vendor_id?: string | null;
+          expense_id?: string | null;
+          amount?: number;
+          payment_type?: PaymentTypeEnum;
+          payment_mode?: PaymentModeEnum;
+          payment_date?: string;
+          reference_number?: string | null;
+          paid_by_name?: string | null;
+          notes?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      financial_audit_logs: {
+        Row: {
+          id: string;
+          wedding_id: string;
+          entity_type: string;
+          entity_id: string;
+          action: string;
+          old_values: Json | null;
+          new_values: Json | null;
+          performed_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          wedding_id: string;
+          entity_type: string;
+          entity_id: string;
+          action: string;
+          old_values?: Json | null;
+          new_values?: Json | null;
+          performed_by?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          wedding_id?: string;
+          entity_type?: string;
+          entity_id?: string;
+          action?: string;
+          old_values?: Json | null;
+          new_values?: Json | null;
+          performed_by?: string | null;
+          created_at?: string;
         };
         Relationships: [];
       };

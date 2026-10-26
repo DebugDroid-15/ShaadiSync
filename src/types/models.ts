@@ -128,12 +128,87 @@ export interface Vendor {
   }>;
 }
 
+export type ExpenseCategory =
+  | "venue"
+  | "catering"
+  | "decor"
+  | "photography"
+  | "entertainment"
+  | "attire_makeup"
+  | "transport_logistics"
+  | "invitations_gifts"
+  | "priest_rituals"
+  | "miscellaneous";
+
+export type PaymentMode =
+  | "bank_transfer"
+  | "upi"
+  | "cash"
+  | "cheque"
+  | "card"
+  | "other";
+
+export type PaymentType =
+  | "advance"
+  | "milestone"
+  | "final"
+  | "refund"
+  | "correction";
+
+export interface BudgetAllocation {
+  id: string;
+  weddingId: string;
+  eventId?: string | null;
+  eventName?: string | null;
+  category: ExpenseCategory;
+  allocatedAmount: number;
+  notes?: string | null;
+}
+
+export interface Expense {
+  id: string;
+  weddingId: string;
+  eventId?: string | null;
+  eventName?: string | null;
+  vendorId?: string | null;
+  vendorName?: string | null;
+  category: ExpenseCategory;
+  title: string;
+  description?: string | null;
+  estimatedAmount: number;
+  actualAmount: number;
+  isPaid: boolean;
+  invoiceNumber?: string | null;
+  dueDate?: string | null;
+  paidAmount?: number;
+  balanceDue?: number;
+}
+
+export interface PaymentRecord {
+  id: string;
+  weddingId: string;
+  vendorId?: string | null;
+  vendorName?: string | null;
+  expenseId?: string | null;
+  expenseTitle?: string | null;
+  amount: number;
+  paymentType: PaymentType;
+  paymentMode: PaymentMode;
+  paymentDate: string;
+  referenceNumber?: string | null;
+  paidByName?: string | null;
+  notes?: string | null;
+  createdAt: string;
+}
+
 export interface BudgetCategoryItem {
+  category: ExpenseCategory;
   name: string;
   allocated: number;
   actual: number;
   paid: number;
   due: number;
+  variance: number;
 }
 
 export interface BudgetSummary {
