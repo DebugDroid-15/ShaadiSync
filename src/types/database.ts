@@ -49,6 +49,8 @@ export type TripStatusEnum = "scheduled" | "boarding" | "in_transit" | "complete
 export type RoomTypeEnum = "standard" | "deluxe" | "suite" | "villa" | "dormitory";
 export type RoomStatusEnum = "available" | "occupied" | "blocked" | "maintenance";
 export type RoomAllocationStatusEnum = "reserved" | "checked_in" | "checked_out" | "cancelled";
+export type PassStatusEnum = "active" | "revoked" | "expired";
+export type CheckinMethodEnum = "qr_scan" | "manual_lookup" | "manual_override";
 
 export interface Database {
   public: {
@@ -1131,6 +1133,171 @@ export interface Database {
           notes?: string | null;
           created_at?: string;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      checkin_gates: {
+        Row: {
+          id: string;
+          wedding_id: string;
+          event_id: string;
+          name: string;
+          location_description: string | null;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          wedding_id: string;
+          event_id: string;
+          name: string;
+          location_description?: string | null;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          wedding_id?: string;
+          event_id?: string;
+          name?: string;
+          location_description?: string | null;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      qr_passes: {
+        Row: {
+          id: string;
+          wedding_id: string;
+          event_id: string;
+          guest_id: string;
+          event_invitation_id: string | null;
+          pass_code: string;
+          token_hash: string;
+          permitted_attendees_count: number;
+          status: PassStatusEnum;
+          issued_at: string;
+          expires_at: string | null;
+          revoked_at: string | null;
+          revoked_reason: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          wedding_id: string;
+          event_id: string;
+          guest_id: string;
+          event_invitation_id?: string | null;
+          pass_code: string;
+          token_hash: string;
+          permitted_attendees_count?: number;
+          status?: PassStatusEnum;
+          issued_at?: string;
+          expires_at?: string | null;
+          revoked_at?: string | null;
+          revoked_reason?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          wedding_id?: string;
+          event_id?: string;
+          guest_id?: string;
+          event_invitation_id?: string | null;
+          pass_code?: string;
+          token_hash?: string;
+          permitted_attendees_count?: number;
+          status?: PassStatusEnum;
+          issued_at?: string;
+          expires_at?: string | null;
+          revoked_at?: string | null;
+          revoked_reason?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      attendance_records: {
+        Row: {
+          id: string;
+          wedding_id: string;
+          event_id: string;
+          guest_id: string;
+          pass_id: string | null;
+          gate_id: string | null;
+          checked_in_by: string | null;
+          checkin_time: string;
+          checkin_method: CheckinMethodEnum;
+          admitted_count: number;
+          operator_notes: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          wedding_id: string;
+          event_id: string;
+          guest_id: string;
+          pass_id?: string | null;
+          gate_id?: string | null;
+          checked_in_by?: string | null;
+          checkin_time?: string;
+          checkin_method?: CheckinMethodEnum;
+          admitted_count?: number;
+          operator_notes?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          wedding_id?: string;
+          event_id?: string;
+          guest_id?: string;
+          pass_id?: string | null;
+          gate_id?: string | null;
+          checked_in_by?: string | null;
+          checkin_time?: string;
+          checkin_method?: CheckinMethodEnum;
+          admitted_count?: number;
+          operator_notes?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      checkin_audit_logs: {
+        Row: {
+          id: string;
+          wedding_id: string;
+          event_id: string;
+          guest_id: string | null;
+          action: string;
+          details: Json | null;
+          performed_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          wedding_id: string;
+          event_id: string;
+          guest_id?: string | null;
+          action: string;
+          details?: Json | null;
+          performed_by?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          wedding_id?: string;
+          event_id?: string;
+          guest_id?: string | null;
+          action?: string;
+          details?: Json | null;
+          performed_by?: string | null;
+          created_at?: string;
         };
         Relationships: [];
       };

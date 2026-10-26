@@ -402,3 +402,83 @@ export interface LogisticsSummary {
     upcomingDepartures: number;
   };
 }
+
+// =====================================================================
+// Phase 8: QR Passes, Gate Operations & Event-Day Check-in
+// =====================================================================
+
+export type PassStatus = "active" | "revoked" | "expired";
+export type CheckinMethod = "qr_scan" | "manual_lookup" | "manual_override";
+
+export interface CheckinGate {
+  id: string;
+  weddingId: string;
+  eventId: string;
+  name: string;
+  locationDescription?: string | null;
+  isActive: boolean;
+}
+
+export interface QrPass {
+  id: string;
+  weddingId: string;
+  eventId: string;
+  eventName?: string;
+  guestId: string;
+  guestName?: string;
+  householdName?: string;
+  passCode: string;
+  permittedAttendeesCount: number;
+  status: PassStatus;
+  issuedAt: string;
+  expiresAt?: string | null;
+  revokedAt?: string | null;
+  revokedReason?: string | null;
+  isCheckedIn?: boolean;
+  checkedInAt?: string | null;
+}
+
+export interface AttendanceRecord {
+  id: string;
+  weddingId: string;
+  eventId: string;
+  eventName?: string;
+  guestId: string;
+  guestName?: string;
+  householdName?: string;
+  passId?: string | null;
+  passCode?: string | null;
+  gateId?: string | null;
+  gateName?: string | null;
+  checkedInBy?: string | null;
+  checkedInByName?: string | null;
+  checkinTime: string;
+  checkinMethod: CheckinMethod;
+  admittedCount: number;
+  operatorNotes?: string | null;
+}
+
+export interface CheckinAuditLog {
+  id: string;
+  weddingId: string;
+  eventId: string;
+  guestId?: string | null;
+  guestName?: string | null;
+  action: "SCAN_SUCCESS" | "DUPLICATE_ATTEMPT" | "MANUAL_OVERRIDE" | "PASS_REVOKED" | "PASS_REISSUED" | "CHECKIN_REMOVED";
+  details?: Record<string, unknown> | null;
+  performedBy?: string | null;
+  performedByName?: string | null;
+  createdAt: string;
+}
+
+export interface EventAttendanceDashboard {
+  eventId: string;
+  eventName: string;
+  totalEligibleGuests: number;
+  confirmedRsvpCount: number;
+  totalCheckedInCount: number;
+  notCheckedInCount: number;
+  ineligibleOrDeclinedCount: number;
+  attendanceRate: number;
+  recentActivity: AttendanceRecord[];
+}

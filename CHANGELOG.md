@@ -5,7 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-## [0.7.0] - Phase 7 Parking, Transport and Accommodation Management - 2026-10-27
+## [0.8.0] - Phase 8 QR Passes, Check-in, Gate Operations and Event-Day Attendance - 2026-10-27
+### Added
+- Schema migration `20261026000007_qr_passes_and_checkin.sql` introducing `checkin_gates`, `qr_passes`, `attendance_records`, and `checkin_audit_logs` tables with atomic concurrency protections, unique check-in constraints, and multi-tenant RLS policies.
+- Event-specific QR pass lifecycle management: issuance, revocation with required audit reason, pass codes, and token hashes without exposing raw guest secrets.
+- Concurrency-safe check-in engine (`scanCheckinAction` & `manualCheckinAction`) guaranteeing zero duplicate admissions through database unique constraints (`UNIQUE(event_id, guest_id)`) and instant duplicate scan alert reporting with prior timestamp and gate name.
+- Supervisor manual check-in override workflow requiring an explicit recorded reason in `checkin_audit_logs`.
+- Interactive Check-in Desk UI at `/dashboard/check-in` with live camera scanner simulator, manual token input, eligible guest roster search with 1-click admission/override, gate manifest stream, and CSV export.
+- Real-time gate operations dashboard tracking eligible attendees, confirmed RSVPs, total admitted count, pending arrivals, and attendance rate.
+- Automated test suite `tests/checkin.test.ts` (8 tests) verifying positive attendee pass constraints, revocation reasons, duplicate scan detection, supervisor override requirements, and ceremony scoping, expanding total test suite to 76 passed tests.
 ### Added
 - Schema migration `20261026000006_parking_transport_accommodation.sql` introducing `parking_areas`, `parking_allocations`, `transport_vehicles`, `transport_trips`, `transport_passengers`, `accommodation_properties`, `rooms`, and `room_allocations` tables with multi-tenant RLS policies and constraints.
 - Parking facility capacity management with valet, accessibility tags, vehicle type registration, slot numbers, and over-allocation guards.

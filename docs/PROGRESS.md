@@ -4,8 +4,8 @@
 - **Project:** ShaadiSync (Indian Wedding Management & Event Operations Platform)
 - **Founding Team:** Team SHATRUJEET (Amar Khera, Ananya Rout, Lucky Kumar, Omm Prakash Sahoo)
 - **Canonical Repository:** `https://github.com/DebugDroid-15/ShaadiSync`
-- **Current Phase:** Phase 7 (Parking, Transport and Accommodation Management)
-- **Status:** Phase 7 Complete & Verified
+- **Current Phase:** Phase 8 (QR Passes, Check-in, Gate Operations and Event-Day Attendance)
+- **Status:** Phase 8 Complete & Verified
 
 ---
 
@@ -161,6 +161,26 @@
 
 ---
 
+## Phase 8 Deliverables & Verification Checklist
+
+| Item | Requirement | Verification Method | Status |
+| :--- | :--- | :--- | :---: |
+| 8.1 | Supabase QR passes & check-in migration | `supabase/migrations/20261026000007_qr_passes_and_checkin.sql` | ✅ Verified |
+| 8.2 | RLS policies for checkin gates, passes, attendance & audit | Scoped via `public.can_access_wedding` and gate operator roles | ✅ Verified |
+| 8.3 | High-entropy pass token & SHA-256 hash security | Zero plaintext PII in QR payload; token revocation audit trail | ✅ Verified |
+| 8.4 | Atomic duplicate check-in concurrency protection | Database `UNIQUE(event_id, guest_id)` & row-level collision alerts | ✅ Verified |
+| 8.5 | Manual supervisor check-in override workflow | Requires explicit justification recorded in `checkin_audit_logs` | ✅ Verified |
+| 8.6 | Interactive `/dashboard/check-in` UI | Camera simulator, manual token input, guest search, live manifest stream | ✅ Verified |
+| 8.7 | Real-time event gate statistics & attendance rate | Total checked-in, eligible count, pending arrivals, % attendance | ✅ Verified |
+| 8.8 | Attendance CSV manifest export | Client-side CSV export with sanitised strings and formula protection | ✅ Verified |
+| 8.9 | Automated check-in & gate operations test suite | `tests/checkin.test.ts` (8/8 tests passed) | ✅ Verified |
+| 8.10 | Total Vitest test suite pass rate | 76/76 tests passed across 10 test suites | ✅ Verified |
+| 8.11 | Strict TypeScript & ESLint checks | `npm run type-check` & `npm run lint` (0 errors) | ✅ Verified |
+| 8.12 | Next.js production build | `npm run build` (19 static routes compiled successfully) | ✅ Verified |
+| 8.13 | Phase 8 Git commit & push | Canonical push to `origin/main` | ✅ Verified |
+
+---
+
 ## Phase Release Records
 
 ### Release Record: Phase 1 — Foundation, Architecture & Design System
@@ -241,7 +261,21 @@
   - `npm run type-check`: 0 errors (`tsc --noEmit`).
   - `npm run lint`: 0 errors, 0 warnings (`next lint`).
   - `npm run build`: 19 routes + dynamic routes + Middleware compiled successfully (`next build`).
+- **Commit SHA:** `5a6748af8c6d7a275cf7fcba441b8354cfaaa4ef`
+- **Branch:** `main`
+- **Remote Push Status:** Canonical push to `https://github.com/DebugDroid-15/ShaadiSync`
+- **Next Phase:** Phase 8 — QR Passes, Check-in, Gate Operations and Event-Day Attendance
+
+### Release Record: Phase 8 — QR Passes, Check-in, Gate Operations and Event-Day Attendance
+- **Phase:** Phase 8
+- **Completion Date:** 2026-10-27
+- **Acceptance Criteria Status:** All Phase 8 criteria verified and passing.
+- **Test Commands & Results:**
+  - `npx vitest run`: 10 test files, 76 tests passed, 0 failed.
+  - `npm run type-check`: 0 errors (`tsc --noEmit`).
+  - `npm run lint`: 0 errors, 0 warnings (`next lint`).
+  - `npm run build`: 19 routes + dynamic routes + Middleware compiled successfully (`next build`).
 - **Commit SHA:** PENDING_COMMIT_SHA
 - **Branch:** `main`
 - **Remote Push Status:** Canonical push to `https://github.com/DebugDroid-15/ShaadiSync`
-- **Next Phase:** Phase 8 — Check-in, Gate Operations and Real-Time Event Day Attendance
+- **Next Phase:** Phase 9 — Cross-Module Integration, Hardening & Security Audit

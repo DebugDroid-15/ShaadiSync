@@ -18,6 +18,11 @@ import {
   RoomInventory,
   RoomAllocation,
   LogisticsSummary,
+  QrPass,
+  AttendanceRecord,
+  CheckinGate,
+  CheckinAuditLog,
+  EventAttendanceDashboard,
 } from "@/types/models";
 
 export const MOCK_ORGANISATION = {
@@ -898,4 +903,138 @@ export const MOCK_LOGISTICS_SUMMARY: LogisticsSummary = {
     upcomingDepartures: 0,
   },
 };
+
+// =====================================================================
+// Phase 8 Mock Data: QR Passes, Gates & Attendance
+// =====================================================================
+
+export const MOCK_CHECKIN_GATES: CheckinGate[] = [
+  {
+    id: "gate-01",
+    weddingId: "wed-aarav-diya",
+    eventId: "fn-02-sangeet",
+    name: "Main Ballroom East Arch Gate",
+    locationDescription: "Primary arrival scanner station with red carpet check-in desk",
+    isActive: true,
+  },
+  {
+    id: "gate-02",
+    weddingId: "wed-aarav-diya",
+    eventId: "fn-04-wedding",
+    name: "Royal Courtyard Toran Entrance",
+    locationDescription: "VIP arrival arch with security and welcome dhol",
+    isActive: true,
+  },
+];
+
+export const MOCK_QR_PASSES: QrPass[] = [
+  {
+    id: "pass-01",
+    weddingId: "wed-aarav-diya",
+    eventId: "fn-02-sangeet",
+    eventName: "Sangeet & Cocktail Gala",
+    guestId: "gst-001",
+    guestName: "Rajesh Sharma",
+    householdName: "Sharma Family (Jaipur)",
+    passCode: "pass_sng_7f8a92b",
+    permittedAttendeesCount: 2,
+    status: "active",
+    issuedAt: "2026-10-25T10:00:00Z",
+    isCheckedIn: true,
+    checkedInAt: "2026-11-21T18:30:00Z",
+  },
+  {
+    id: "pass-02",
+    weddingId: "wed-aarav-diya",
+    eventId: "fn-02-sangeet",
+    eventName: "Sangeet & Cocktail Gala",
+    guestId: "gst-003",
+    guestName: "Vikram Kapoor",
+    householdName: "Kapoor Family (Delhi)",
+    passCode: "pass_sng_3e1d84c",
+    permittedAttendeesCount: 1,
+    status: "active",
+    issuedAt: "2026-10-25T10:05:00Z",
+    isCheckedIn: false,
+    checkedInAt: null,
+  },
+  {
+    id: "pass-03",
+    weddingId: "wed-aarav-diya",
+    eventId: "fn-04-wedding",
+    eventName: "Baraat, Varmala & Pheras",
+    guestId: "gst-002",
+    guestName: "Diya Sharma",
+    householdName: "Sharma Family (Jaipur)",
+    passCode: "pass_wed_9a0b12f",
+    permittedAttendeesCount: 2,
+    status: "active",
+    issuedAt: "2026-10-25T10:10:00Z",
+    isCheckedIn: false,
+    checkedInAt: null,
+  },
+];
+
+export const MOCK_ATTENDANCE_RECORDS: AttendanceRecord[] = [
+  {
+    id: "att-01",
+    weddingId: "wed-aarav-diya",
+    eventId: "fn-02-sangeet",
+    eventName: "Sangeet & Cocktail Gala",
+    guestId: "gst-001",
+    guestName: "Rajesh Sharma",
+    householdName: "Sharma Family (Jaipur)",
+    passId: "pass-01",
+    passCode: "pass_sng_7f8a92b",
+    gateId: "gate-01",
+    gateName: "Main Ballroom East Arch Gate",
+    checkedInBy: "usr-lucky-01",
+    checkedInByName: "Lucky Kumar (Coordinator)",
+    checkinTime: "2026-11-21T18:30:00Z",
+    checkinMethod: "qr_scan",
+    admittedCount: 2,
+    operatorNotes: "Father of bride with accompanying spouse.",
+  },
+];
+
+export const MOCK_CHECKIN_AUDIT_LOGS: CheckinAuditLog[] = [
+  {
+    id: "caudit-01",
+    weddingId: "wed-aarav-diya",
+    eventId: "fn-02-sangeet",
+    guestId: "gst-001",
+    guestName: "Rajesh Sharma",
+    action: "SCAN_SUCCESS",
+    details: { passCode: "pass_sng_7f8a92b", gate: "Main Ballroom East Arch Gate", admittedCount: 2 },
+    performedBy: "usr-lucky-01",
+    performedByName: "Lucky Kumar",
+    createdAt: "2026-11-21T18:30:00Z",
+  },
+];
+
+export const MOCK_ATTENDANCE_DASHBOARDS: Record<string, EventAttendanceDashboard> = {
+  "fn-02-sangeet": {
+    eventId: "fn-02-sangeet",
+    eventName: "Sangeet & Cocktail Gala",
+    totalEligibleGuests: 350,
+    confirmedRsvpCount: 310,
+    totalCheckedInCount: 185,
+    notCheckedInCount: 125,
+    ineligibleOrDeclinedCount: 40,
+    attendanceRate: 60,
+    recentActivity: MOCK_ATTENDANCE_RECORDS,
+  },
+  "fn-04-wedding": {
+    eventId: "fn-04-wedding",
+    eventName: "Baraat, Varmala & Pheras",
+    totalEligibleGuests: 380,
+    confirmedRsvpCount: 335,
+    totalCheckedInCount: 0,
+    notCheckedInCount: 335,
+    ineligibleOrDeclinedCount: 45,
+    attendanceRate: 0,
+    recentActivity: [],
+  },
+};
+
 
