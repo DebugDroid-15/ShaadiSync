@@ -43,6 +43,12 @@ export type ExpenseCategoryEnum =
   | "miscellaneous";
 export type PaymentModeEnum = "bank_transfer" | "upi" | "cash" | "cheque" | "card" | "other";
 export type PaymentTypeEnum = "advance" | "milestone" | "final" | "refund" | "correction";
+export type VehicleTypeEnum = "sedan" | "suv" | "tempo_traveller" | "mini_bus" | "bus" | "two_wheeler" | "other";
+export type ParkingAllocationStatusEnum = "reserved" | "allocated" | "arrived" | "cancelled";
+export type TripStatusEnum = "scheduled" | "boarding" | "in_transit" | "completed" | "cancelled";
+export type RoomTypeEnum = "standard" | "deluxe" | "suite" | "villa" | "dormitory";
+export type RoomStatusEnum = "available" | "occupied" | "blocked" | "maintenance";
+export type RoomAllocationStatusEnum = "reserved" | "checked_in" | "checked_out" | "cancelled";
 
 export interface Database {
   public: {
@@ -768,6 +774,363 @@ export interface Database {
           new_values?: Json | null;
           performed_by?: string | null;
           created_at?: string;
+        };
+        Relationships: [];
+      };
+      parking_areas: {
+        Row: {
+          id: string;
+          wedding_id: string;
+          event_id: string | null;
+          venue_id: string | null;
+          name: string;
+          location_description: string | null;
+          total_capacity: number;
+          is_accessible: boolean;
+          is_valet_available: boolean;
+          notes: string | null;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          wedding_id: string;
+          event_id?: string | null;
+          venue_id?: string | null;
+          name: string;
+          location_description?: string | null;
+          total_capacity?: number;
+          is_accessible?: boolean;
+          is_valet_available?: boolean;
+          notes?: string | null;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          wedding_id?: string;
+          event_id?: string | null;
+          venue_id?: string | null;
+          name?: string;
+          location_description?: string | null;
+          total_capacity?: number;
+          is_accessible?: boolean;
+          is_valet_available?: boolean;
+          notes?: string | null;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      parking_allocations: {
+        Row: {
+          id: string;
+          wedding_id: string;
+          parking_area_id: string;
+          guest_id: string | null;
+          household_id: string | null;
+          vehicle_type: VehicleTypeEnum;
+          vehicle_registration: string | null;
+          driver_name: string | null;
+          driver_phone: string | null;
+          slot_number: string | null;
+          status: ParkingAllocationStatusEnum;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          wedding_id: string;
+          parking_area_id: string;
+          guest_id?: string | null;
+          household_id?: string | null;
+          vehicle_type?: VehicleTypeEnum;
+          vehicle_registration?: string | null;
+          driver_name?: string | null;
+          driver_phone?: string | null;
+          slot_number?: string | null;
+          status?: ParkingAllocationStatusEnum;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          wedding_id?: string;
+          parking_area_id?: string;
+          guest_id?: string | null;
+          household_id?: string | null;
+          vehicle_type?: VehicleTypeEnum;
+          vehicle_registration?: string | null;
+          driver_name?: string | null;
+          driver_phone?: string | null;
+          slot_number?: string | null;
+          status?: ParkingAllocationStatusEnum;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      transport_vehicles: {
+        Row: {
+          id: string;
+          wedding_id: string;
+          vendor_id: string | null;
+          provider_name: string;
+          vehicle_type: VehicleTypeEnum;
+          registration_number: string | null;
+          capacity: number;
+          driver_name: string | null;
+          driver_phone: string | null;
+          is_active: boolean;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          wedding_id: string;
+          vendor_id?: string | null;
+          provider_name: string;
+          vehicle_type?: VehicleTypeEnum;
+          registration_number?: string | null;
+          capacity?: number;
+          driver_name?: string | null;
+          driver_phone?: string | null;
+          is_active?: boolean;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          wedding_id?: string;
+          vendor_id?: string | null;
+          provider_name?: string;
+          vehicle_type?: VehicleTypeEnum;
+          registration_number?: string | null;
+          capacity?: number;
+          driver_name?: string | null;
+          driver_phone?: string | null;
+          is_active?: boolean;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      transport_trips: {
+        Row: {
+          id: string;
+          wedding_id: string;
+          vehicle_id: string;
+          event_id: string | null;
+          title: string;
+          origin: string;
+          destination: string;
+          pickup_point: string | null;
+          scheduled_pickup_time: string;
+          estimated_arrival_time: string | null;
+          status: TripStatusEnum;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          wedding_id: string;
+          vehicle_id: string;
+          event_id?: string | null;
+          title: string;
+          origin: string;
+          destination: string;
+          pickup_point?: string | null;
+          scheduled_pickup_time: string;
+          estimated_arrival_time?: string | null;
+          status?: TripStatusEnum;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          wedding_id?: string;
+          vehicle_id?: string;
+          event_id?: string | null;
+          title?: string;
+          origin?: string;
+          destination?: string;
+          pickup_point?: string | null;
+          scheduled_pickup_time?: string;
+          estimated_arrival_time?: string | null;
+          status?: TripStatusEnum;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      transport_passengers: {
+        Row: {
+          id: string;
+          wedding_id: string;
+          trip_id: string;
+          guest_id: string;
+          passenger_count: number;
+          pickup_notes: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          wedding_id: string;
+          trip_id: string;
+          guest_id: string;
+          passenger_count?: number;
+          pickup_notes?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          wedding_id?: string;
+          trip_id?: string;
+          guest_id?: string;
+          passenger_count?: number;
+          pickup_notes?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      accommodation_properties: {
+        Row: {
+          id: string;
+          wedding_id: string;
+          name: string;
+          address: string | null;
+          city: string | null;
+          contact_person: string | null;
+          contact_phone: string | null;
+          is_active: boolean;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          wedding_id: string;
+          name: string;
+          address?: string | null;
+          city?: string | null;
+          contact_person?: string | null;
+          contact_phone?: string | null;
+          is_active?: boolean;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          wedding_id?: string;
+          name?: string;
+          address?: string | null;
+          city?: string | null;
+          contact_person?: string | null;
+          contact_phone?: string | null;
+          is_active?: boolean;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      rooms: {
+        Row: {
+          id: string;
+          wedding_id: string;
+          property_id: string;
+          room_number: string;
+          room_type: RoomTypeEnum;
+          floor: string | null;
+          max_occupancy: number;
+          status: RoomStatusEnum;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          wedding_id: string;
+          property_id: string;
+          room_number: string;
+          room_type?: RoomTypeEnum;
+          floor?: string | null;
+          max_occupancy?: number;
+          status?: RoomStatusEnum;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          wedding_id?: string;
+          property_id?: string;
+          room_number?: string;
+          room_type?: RoomTypeEnum;
+          floor?: string | null;
+          max_occupancy?: number;
+          status?: RoomStatusEnum;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      room_allocations: {
+        Row: {
+          id: string;
+          wedding_id: string;
+          room_id: string;
+          guest_id: string | null;
+          household_id: string | null;
+          occupancy_count: number;
+          check_in_date: string;
+          check_out_date: string;
+          status: RoomAllocationStatusEnum;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          wedding_id: string;
+          room_id: string;
+          guest_id?: string | null;
+          household_id?: string | null;
+          occupancy_count?: number;
+          check_in_date: string;
+          check_out_date: string;
+          status?: RoomAllocationStatusEnum;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          wedding_id?: string;
+          room_id?: string;
+          guest_id?: string | null;
+          household_id?: string | null;
+          occupancy_count?: number;
+          check_in_date?: string;
+          check_out_date?: string;
+          status?: RoomAllocationStatusEnum;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
         };
         Relationships: [];
       };

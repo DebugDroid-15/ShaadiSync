@@ -5,7 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-## [0.6.0] - Phase 6 Budget, Expenses & Financial Reporting - 2026-10-27
+## [0.7.0] - Phase 7 Parking, Transport and Accommodation Management - 2026-10-27
+### Added
+- Schema migration `20261026000006_parking_transport_accommodation.sql` introducing `parking_areas`, `parking_allocations`, `transport_vehicles`, `transport_trips`, `transport_passengers`, `accommodation_properties`, `rooms`, and `room_allocations` tables with multi-tenant RLS policies and constraints.
+- Parking facility capacity management with valet, accessibility tags, vehicle type registration, slot numbers, and over-allocation guards.
+- Shuttle route & transfer manifests managing origin, destination, meeting points, scheduled pickup timestamps, fleet vehicle capacities, and passenger assignments.
+- Hotel & resort room inventory system tracking room types (standard, deluxe, suite, villa, dormitory), max occupancy limits, and conflict-free date-range allocations preventing double-booking race conditions.
+- Interactive `/dashboard/logistics` module with Parking, Shuttle Transfers, and Hotel Room tabs, modal allocation dialogs, utilization KPIs, and client-side CSV manifest export.
+- Automated test suite `tests/logistics.test.ts` (9 tests) verifying parking capacity limits, trip seat availability, check-in/check-out date ordering, max occupancy enforcement, and date-range conflict detection, expanding total test suite to 68 passed tests.
 ### Added
 - Schema migration `20261026000005_budget_expenses_payments.sql` introducing `budget_allocations`, `expenses`, `payments`, and `financial_audit_logs` tables with constraints and Row Level Security (RLS) policies.
 - Non-duplicative financial reconciliation engine (`getBudgetSummaryAction`) preventing double-counting between vendor contracts and linked expense records.
