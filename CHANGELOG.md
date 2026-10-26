@@ -5,6 +5,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.3.0] - Phase 3 Wedding, Event & Guest Management - 2026-10-26
+### Added
+- Schema migration `20261026000002_functions_households_guests.sql` for venues, events/functions, households, guests, and event_invitations.
+- Row Level Security (RLS) policies for venues, ceremonies, households, guests, and per-function invitations.
+- Server Actions for functions/events (`createEventAction`, `getEventsAction`, `deleteEventAction`) and guests (`createGuestAction`, `getGuestsAction`, `bulkImportGuestsAction`, `deleteGuestAction`).
+- Zod validation schemas for wedding functions, households, guests, and CSV import rows with row-level error reporting.
+- Robust CSV parser & validator (`src/lib/csv.ts`) handling quoted commas, multiline cells, missing columns, and VIP flag variants.
+- CSV export capability for guests with per-function invitation counts.
+- Interactive modal UI for creating ceremonies, adding individual guests, and bulk importing CSV with live error feedback.
+- Automated test suites: `tests/csv.test.ts` (8 tests) and `tests/crud.test.ts` (5 tests), bringing total test suite to 35 passed tests.
+
 ## [0.2.0] - Phase 2 Backend, Authentication & Multi-Tenant Security - 2026-10-26
 ### Added
 - Complete PostgreSQL schema migration `20261026000001_initial_schema.sql` covering profiles, organisations, organisation_members, weddings, and wedding_members.
