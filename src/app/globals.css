@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #FAF8F2; /* Warm Ivory Base */
+  --foreground: #172B4D; /* Deep Navy Text */
+
+  --brand-navy: #172B4D;
+  --brand-gold: #C6A15B;
+  --brand-ivory: #FAF8F2;
+  --brand-surface: #FFFFFF;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: #c6a15b;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a9833f;
+}
+
+/* Indian Wedding Festive Motif Accents */
+.gold-gradient {
+  background: linear-gradient(135deg, #c6a15b 0%, #e0c48a 50%, #c6a15b 100%);
+}
+
+.navy-gradient {
+  background: linear-gradient(135deg, #172b4d 0%, #1e3a66 100%);
+}
+
+.subtle-border {
+  border-color: rgba(23, 43, 77, 0.08);
+}
