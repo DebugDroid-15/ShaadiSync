@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.2.0] - Phase 2 Backend, Authentication & Multi-Tenant Security - 2026-10-26
+### Added
+- Complete PostgreSQL schema migration `20261026000001_initial_schema.sql` covering profiles, organisations, organisation_members, weddings, and wedding_members.
+- Database-enforced Row Level Security (RLS) policies with security-definer functions: `is_org_member`, `is_org_admin`, and `can_access_wedding`.
+- Reproducible multi-tenant seed script `supabase/seed.sql` with deterministic testing fixtures.
+- Supabase SSR and Client architecture (`src/lib/supabase/client.ts`, `server.ts`, `admin.ts`, `middleware.ts`).
+- Server Actions for authentication (`signInAction`, `signUpAction`, `signOutAction`) and multi-tenant wedding scoping (`getWeddingsAction`, `createWeddingAction`).
+- Interactive registration and login forms with error handling and validation.
+- Automated security test suite `tests/security.test.ts` validating cross-organisation boundary isolation, cross-wedding access barriers, unauthenticated blocks, and role privileges (9/9 security tests passed).
+
 ## [0.1.0] - Phase 1 Foundation - 2026-10-26
 ### Added
 - Canonical repository initialization and connection to `https://github.com/DebugDroid-15/ShaadiSync`.

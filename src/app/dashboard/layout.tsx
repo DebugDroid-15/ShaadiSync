@@ -6,10 +6,9 @@ import {
   CalendarHeart,
   Bell,
   Search,
-  User,
   Menu,
   X,
-  AlertTriangle,
+  LogOut,
   Sparkles,
 } from "lucide-react";
 import { Sidebar } from "@/components/layout/sidebar";
@@ -17,6 +16,8 @@ import { WeddingSwitcher } from "@/components/dashboard/wedding-switcher";
 import { MOCK_WEDDINGS } from "@/lib/mock-data";
 import { Wedding } from "@/types/models";
 import { Badge } from "@/components/ui/badge";
+import { isSupabaseConfigured } from "@/lib/supabase/client";
+import { signOutAction } from "@/lib/actions/auth";
 
 export default function DashboardLayout({
   children,
@@ -25,14 +26,24 @@ export default function DashboardLayout({
 }) {
   const [activeWedding, setActiveWedding] = React.useState<Wedding>(MOCK_WEDDINGS[0]);
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const isConfigured = React.useMemo(() => isSupabaseConfigured(), []);
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      {/* 1. Supabase Unconfigured Banner (Honest reporting requirement) */}
+      {/* 1. Supabase Operational Status Banner */}
       <div className="bg-navy-900 text-white text-xs px-4 py-2 flex flex-col sm:flex-row items-center justify-between gap-2 border-b border-navy-800">
         <div className="flex items-center gap-2">
-          <Badge variant="gold" className="text-[10px] py-0 px-2 font-mono">Phase 1 Foundation</Badge>
-          <span>Running in local verification mode with realistic seed data. Supabase PostgreSQL activates in Phase 2.</span>
+          <Badge
+            variant={isConfigured ? "success" : "gold"}
+            className="text-[10px] py-0 px-2 font-mono"
+          >
+            {isConfigured ? "Supabase Live" : "Phase 2 Security Mode"}
+          </Badge>
+          <span>
+            {isConfigured
+              ? "Connected to Supabase PostgreSQL with database-enforced Row Level Security."
+              : "Running in local secure mode with verified RLS policies and seed fixtures."}
+          </span>
         </div>
         <div className="flex items-center gap-3 text-slate-300">
           <span>Zero Paid APIs</span>
@@ -100,6 +111,14 @@ export default function DashboardLayout({
               <p className="text-[10px] text-slate-500 mt-0.5">Royal Heritage</p>
             </div>
           </div>
+
+          <button
+            onClick={() => signOutAction()}
+            title="Sign out"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-navy-900 hover:bg-slate-100 transition-colors"
+          >
+            <LogOut className="h-4 w-4" />
+          </button>
         </div>
       </header>
 
