@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import crypto from "crypto";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 import { submitRsvpFormSchema, type SubmitRsvpForm } from "@/lib/validations/rsvp";
 import { MOCK_GUESTS, MOCK_FUNCTIONS, MOCK_WEDDINGS } from "@/lib/mock-data";
@@ -96,7 +97,10 @@ export async function getInvitationByTokenAction(token: string): Promise<PublicI
     };
   }
 
-  const supabase = await createServerSupabaseClient();
+  // Use Admin Client if available to bypass RLS for token lookup, or fall back to Server Client
+  const adminSupabase = createAdminClient();
+  const userSupabase = await createServerSupabaseClient();
+  const supabase = (adminSupabase || userSupabase) as any;
   if (!supabase) return { isValid: false, error: "Database client unavailable." };
 
   // 1. Fetch guest record with unrevoked token check
@@ -108,6 +112,44 @@ export async function getInvitationByTokenAction(token: string): Promise<PublicI
     .single();
 
   if (guestError || !guestData) {
+    // If not found in database, check mock guests for demo/preview tokens
+    const mockGuest = MOCK_GUESTS.find((g) => g.invitationToken === token);
+    if (mockGuest) {
+      const mockWedding = MOCK_WEDDINGS[0];
+      const invitedEvents = MOCK_FUNCTIONS.filter((f) => mockGuest.invitedFunctionIds.includes(f.id));
+      return {
+        isValid: true,
+        guest: {
+          id: mockGuest.id,
+          firstName: mockGuest.firstName,
+          lastName: mockGuest.lastName,
+          phone: mockGuest.phone,
+          dietaryPreference: mockGuest.dietaryPreference,
+          isVip: mockGuest.isVip,
+          side: mockGuest.side,
+        },
+        wedding: {
+          title: mockWedding.title,
+          coupleBrideName: mockWedding.coupleBrideName,
+          coupleGroomName: mockWedding.coupleGroomName,
+          startDate: mockWedding.startDate,
+          endDate: mockWedding.endDate,
+          primaryCity: mockWedding.primaryCity,
+        },
+        events: invitedEvents.map((e) => ({
+          id: e.id,
+          invitationId: "mock-inv-" + e.id,
+          name: e.name,
+          eventType: e.eventType,
+          startTime: e.startTime,
+          endTime: e.endTime,
+          venueName: e.venueName,
+          venueAddress: e.venueAddress,
+          dressCode: e.dressCode,
+          status: "invited",
+        })),
+      };
+    }
     return { isValid: false, error: "Invitation not found or link has expired." };
   }
 
@@ -186,7 +228,14 @@ export async function submitRsvpAction(payload: SubmitRsvpForm): Promise<{ succe
     return { success: true };
   }
 
-  const supabase = await createServerSupabaseClient();
+  // Check if mock token submission
+  if (valid.token.startsWith("tok_aarav_diya_") || valid.token.startsWith("tok_mock_")) {
+    return { success: true };
+  }
+
+  const adminSupabase = createAdminClient();
+  const userSupabase = await createServerSupabaseClient();
+  const supabase = (adminSupabase || userSupabase) as any;
   if (!supabase) return { success: false, error: "Database client unavailable." };
 
   for (const resp of valid.responses) {
