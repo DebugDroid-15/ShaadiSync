@@ -12,10 +12,11 @@ import { Guest, WeddingFunction } from "@/types/models";
 import { validateGuestCsv, exportGuestsToCsv } from "@/lib/csv";
 import { createGuestAction, bulkImportGuestsAction, deleteGuestAction } from "@/lib/actions/guests";
 import { InviteShareModal } from "@/components/dashboard/invite-share-modal";
+import { ShaadiStorage } from "@/lib/shaadi-storage";
 
 export default function GuestsPage() {
-  const [guests, setGuests] = React.useState<Guest[]>(MOCK_GUESTS);
-  const [functions] = React.useState<WeddingFunction[]>(MOCK_FUNCTIONS);
+  const [guests, setGuests] = React.useState<Guest[]>([]);
+  const [functions, setFunctions] = React.useState<WeddingFunction[]>([]);
   const [searchQuery, setSearchQuery] = React.useState("");
   const [selectedSide, setSelectedSide] = React.useState<string>("all");
   const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
@@ -26,6 +27,11 @@ export default function GuestsPage() {
   const [csvErrors, setCsvErrors] = React.useState<Array<{ rowNumber: number; errors: string[] }>>([]);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    setGuests(ShaadiStorage.getGuests());
+    setFunctions(ShaadiStorage.getFunctions());
+  }, []);
 
   const activeWedding = MOCK_WEDDINGS[0];
 
@@ -99,7 +105,9 @@ export default function GuestsPage() {
           invitationToken: "tok_" + Math.random().toString(36).substring(2, 9),
           invitedFunctionIds: csvTargetEvents,
         }));
-        setGuests((prev) => [...prev, ...newGuests]);
+        const updated = [...guests, ...newGuests];
+        setGuests(updated);
+        ShaadiStorage.saveGuests(updated);
         setIsCsvModalOpen(false);
         setCsvText("");
       }
@@ -141,7 +149,9 @@ export default function GuestsPage() {
           invitationToken: "tok_" + Math.random().toString(36).substring(2, 9),
           invitedFunctionIds: invitedEventIds,
         };
-        setGuests((prev) => [...prev, newGuest]);
+        const updated = [...guests, newGuest];
+        setGuests(updated);
+        ShaadiStorage.saveGuests(updated);
         setIsAddModalOpen(false);
       }
     } catch (err: unknown) {
@@ -154,7 +164,9 @@ export default function GuestsPage() {
   async function handleDelete(id: string) {
     if (!confirm("Delete this guest record?")) return;
     await deleteGuestAction(id);
-    setGuests((prev) => prev.filter((g) => g.id !== id));
+    const updated = guests.filter((g) => g.id !== id);
+    setGuests(updated);
+    ShaadiStorage.saveGuests(updated);
   }
 
   return (

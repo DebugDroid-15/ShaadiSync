@@ -21,6 +21,7 @@ import { formatINR } from "@/lib/utils";
 import { MOCK_VENDORS } from "@/lib/mock-data";
 import { Vendor, VendorCategory, VendorBookingStatus } from "@/types/models";
 import { createVendorAction } from "@/lib/actions/vendors";
+import { ShaadiStorage } from "@/lib/shaadi-storage";
 
 const CATEGORY_LABELS: Record<VendorCategory, string> = {
   caterer: "Catering & Banquets",
@@ -37,13 +38,17 @@ const CATEGORY_LABELS: Record<VendorCategory, string> = {
 };
 
 export default function VendorsPage() {
-  const [vendors, setVendors] = React.useState<Vendor[]>(MOCK_VENDORS);
+  const [vendors, setVendors] = React.useState<Vendor[]>([]);
   const [searchQuery, setSearchQuery] = React.useState("");
   const [selectedCategory, setSelectedCategory] = React.useState<string>("all");
   const [selectedStatus, setSelectedStatus] = React.useState<string>("all");
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [formError, setFormError] = React.useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+  React.useEffect(() => {
+    setVendors(ShaadiStorage.getVendors());
+  }, []);
 
   // Financial aggregates
   const totalContracted = vendors.reduce((acc, v) => acc + (v.agreedPrice || v.quotedPrice), 0);
@@ -73,7 +78,9 @@ export default function VendorsPage() {
       if (!res.success) {
         setFormError(res.error || "Failed to create vendor.");
       } else if (res.data) {
-        setVendors((prev) => [...prev, res.data as Vendor]);
+        const updated = [...vendors, res.data as Vendor];
+        setVendors(updated);
+        ShaadiStorage.saveVendors(updated);
         setIsModalOpen(false);
       }
     } catch {

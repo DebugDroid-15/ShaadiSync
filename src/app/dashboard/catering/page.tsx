@@ -21,6 +21,7 @@ import { MOCK_CATERING_PLANS } from "@/lib/mock-data";
 import { formatINR, calculateCateringGuarantee } from "@/lib/utils";
 import { CateringPlan } from "@/types/models";
 import { approveCateringGuaranteeAction } from "@/lib/actions/catering";
+import { ShaadiStorage } from "@/lib/shaadi-storage";
 
 const MEAL_LABELS: Record<string, string> = {
   breakfast: "Breakfast",
@@ -31,8 +32,12 @@ const MEAL_LABELS: Record<string, string> = {
 
 export default function CateringPage() {
   const [buffer, setBuffer] = React.useState<number>(10);
-  const [plans, setPlans] = React.useState<CateringPlan[]>(MOCK_CATERING_PLANS);
+  const [plans, setPlans] = React.useState<CateringPlan[]>([]);
   const [approvingId, setApprovingId] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    setPlans(ShaadiStorage.getCateringPlans());
+  }, []);
 
   const totalConfirmedGuests = plans.reduce((acc, plan) => acc + plan.confirmedRsvp, 0);
 
@@ -56,19 +61,19 @@ export default function CateringPage() {
     try {
       const res = await approveCateringGuaranteeAction(planId, currentHeadcount);
       if (res.success) {
-        setPlans((prev) =>
-          prev.map((p) =>
-            p.id === planId
-              ? {
-                  ...p,
-                  isGuaranteeApproved: true,
-                  approvedGuaranteeHeadcount: currentHeadcount,
-                  approvedBy: "Current Organiser",
-                  approvedAt: new Date().toISOString(),
-                }
-              : p
-          )
+        const updated = plans.map((p) =>
+          p.id === planId
+            ? {
+                ...p,
+                isGuaranteeApproved: true,
+                approvedGuaranteeHeadcount: currentHeadcount,
+                approvedBy: "Current Organiser",
+                approvedAt: new Date().toISOString(),
+              }
+            : p
         );
+        setPlans(updated);
+        ShaadiStorage.saveCateringPlans(updated);
       }
     } finally {
       setApprovingId(null);

@@ -6,8 +6,15 @@ import { EmptyState } from "@/components/dashboard/empty-state";
 import { MOCK_TASKS } from "@/lib/mock-data";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { TaskItem } from "@/types/models";
+import { ShaadiStorage } from "@/lib/shaadi-storage";
 
 export default function TasksPage() {
+  const [tasks, setTasks] = React.useState<TaskItem[]>([]);
+
+  React.useEffect(() => {
+    setTasks(ShaadiStorage.getTasks());
+  }, []);
   return (
     <div className="space-y-6">
       <div>
@@ -30,7 +37,7 @@ export default function TasksPage() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {MOCK_TASKS.map((t) => (
+          {tasks.map((t) => (
             <TableRow key={t.id}>
               <TableCell className="font-semibold text-navy-900">{t.title}</TableCell>
               <TableCell>

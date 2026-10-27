@@ -11,12 +11,17 @@ import { MOCK_FUNCTIONS, MOCK_WEDDINGS } from "@/lib/mock-data";
 import { WeddingFunction } from "@/types/models";
 import { formatDate, formatTime } from "@/lib/utils";
 import { createEventAction, deleteEventAction } from "@/lib/actions/events";
+import { ShaadiStorage } from "@/lib/shaadi-storage";
 
 export default function FunctionsPage() {
-  const [functions, setFunctions] = React.useState<WeddingFunction[]>(MOCK_FUNCTIONS);
+  const [functions, setFunctions] = React.useState<WeddingFunction[]>([]);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    setFunctions(ShaadiStorage.getFunctions());
+  }, []);
 
   const activeWedding = MOCK_WEDDINGS[0];
 
@@ -51,7 +56,9 @@ export default function FunctionsPage() {
           declinedRsvp: 0,
           pendingRsvp: 0,
         };
-        setFunctions((prev) => [...prev, newFn]);
+        const updated = [...functions, newFn];
+        setFunctions(updated);
+        ShaadiStorage.saveFunctions(updated);
         setIsModalOpen(false);
       }
     } catch (err: unknown) {
@@ -64,7 +71,9 @@ export default function FunctionsPage() {
   async function handleDelete(id: string) {
     if (!confirm("Are you sure you want to delete this ceremony?")) return;
     await deleteEventAction(id);
-    setFunctions((prev) => prev.filter((f) => f.id !== id));
+    const updated = functions.filter((f) => f.id !== id);
+    setFunctions(updated);
+    ShaadiStorage.saveFunctions(updated);
   }
 
   return (

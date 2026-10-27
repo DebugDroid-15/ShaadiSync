@@ -47,15 +47,25 @@ import {
   createTransportTripAction,
   createRoomAllocationAction,
 } from "@/lib/actions/logistics";
+import { ShaadiStorage } from "@/lib/shaadi-storage";
 
 export default function LogisticsPage() {
   const [activeTab, setActiveTab] = React.useState<"parking" | "transport" | "accommodation">("parking");
-  const [summary] = React.useState<LogisticsSummary>(MOCK_LOGISTICS_SUMMARY);
-  const [parkingAreas] = React.useState<ParkingArea[]>(MOCK_PARKING_AREAS);
-  const [parkingAllocs, setParkingAllocs] = React.useState<ParkingAllocation[]>(MOCK_PARKING_ALLOCATIONS);
-  const [trips, setTrips] = React.useState<TransportTrip[]>(MOCK_TRANSPORT_TRIPS);
-  const [rooms] = React.useState<RoomInventory[]>(MOCK_ROOM_INVENTORY);
-  const [roomAllocs, setRoomAllocs] = React.useState<RoomAllocation[]>(MOCK_ROOM_ALLOCATIONS);
+  const [summary, setSummary] = React.useState<LogisticsSummary>(MOCK_LOGISTICS_SUMMARY);
+  const [parkingAreas, setParkingAreas] = React.useState<ParkingArea[]>([]);
+  const [parkingAllocs, setParkingAllocs] = React.useState<ParkingAllocation[]>([]);
+  const [trips, setTrips] = React.useState<TransportTrip[]>([]);
+  const [rooms, setRooms] = React.useState<RoomInventory[]>([]);
+  const [roomAllocs, setRoomAllocs] = React.useState<RoomAllocation[]>([]);
+
+  React.useEffect(() => {
+    setSummary(ShaadiStorage.getLogisticsSummary());
+    setParkingAreas(ShaadiStorage.getParkingAreas());
+    setParkingAllocs(ShaadiStorage.getParkingAllocations());
+    setTrips(ShaadiStorage.getTransportTrips());
+    setRooms(ShaadiStorage.getRoomInventory());
+    setRoomAllocs(ShaadiStorage.getRoomAllocations());
+  }, []);
 
   // Modals state
   const [isParkingModalOpen, setIsParkingModalOpen] = React.useState(false);
@@ -132,7 +142,9 @@ export default function LogisticsPage() {
       if (!res.success) {
         setFormError(res.error || "Failed to assign parking.");
       } else if (res.data) {
-        setParkingAllocs((prev) => [res.data as ParkingAllocation, ...prev]);
+        const updated = [res.data as ParkingAllocation, ...parkingAllocs];
+        setParkingAllocs(updated);
+        ShaadiStorage.saveParkingAllocations(updated);
         setIsParkingModalOpen(false);
       }
     } catch {
@@ -156,7 +168,9 @@ export default function LogisticsPage() {
       if (!res.success) {
         setFormError(res.error || "Failed to schedule shuttle route.");
       } else if (res.data) {
-        setTrips((prev) => [res.data as TransportTrip, ...prev]);
+        const updated = [res.data as TransportTrip, ...trips];
+        setTrips(updated);
+        ShaadiStorage.saveTransportTrips(updated);
         setIsTripModalOpen(false);
       }
     } catch {
@@ -179,7 +193,9 @@ export default function LogisticsPage() {
       if (!res.success) {
         setFormError(res.error || "Failed to allocate room.");
       } else if (res.data) {
-        setRoomAllocs((prev) => [res.data as RoomAllocation, ...prev]);
+        const updated = [res.data as RoomAllocation, ...roomAllocs];
+        setRoomAllocs(updated);
+        ShaadiStorage.saveRoomAllocations(updated);
         setIsRoomModalOpen(false);
       }
     } catch {

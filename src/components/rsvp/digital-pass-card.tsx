@@ -2,8 +2,9 @@
 
 import * as React from "react";
 import QRCode from "qrcode";
-import { Download, QrCode, Sparkles, Smartphone, Share2 } from "lucide-react";
+import { Download, QrCode, Sparkles, Smartphone, Share2, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { downloadIcsFile } from "@/lib/calendar";
 
 interface DigitalPassCardProps {
   passCode: string;
@@ -205,6 +206,25 @@ export function DigitalPassCard({
         >
           <Download className="h-3.5 w-3.5 text-gold-600" />
           Save Pass to Phone
+        </Button>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            downloadIcsFile({
+              title: `${eventName} • ${weddingTitle}`,
+              description: `Wedding Ceremony: ${eventName} for ${guestName} (${permittedCount} passes). Pass Code: ${passCode}`,
+              location: "Wedding Venue",
+              startTime: new Date().toISOString(),
+              endTime: new Date(Date.now() + 4 * 3600 * 1000).toISOString(),
+            });
+          }}
+          className="w-full sm:w-auto text-xs gap-1.5 border-slate-300 hover:bg-slate-50 font-semibold text-navy-800"
+          title="Add this ceremony to Google or Apple Calendar"
+        >
+          <Calendar className="h-3.5 w-3.5 text-navy-700" />
+          Add to Calendar (.ics)
         </Button>
 
         {typeof navigator !== "undefined" && "share" in navigator && (

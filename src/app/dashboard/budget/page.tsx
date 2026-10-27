@@ -34,6 +34,7 @@ import {
   PaymentType,
 } from "@/types/models";
 import { createExpenseAction, recordPaymentAction } from "@/lib/actions/budget";
+import { ShaadiStorage } from "@/lib/shaadi-storage";
 
 const CATEGORY_NAMES: Record<ExpenseCategory, string> = {
   venue: "Venue & Lawns",
@@ -51,8 +52,14 @@ const CATEGORY_NAMES: Record<ExpenseCategory, string> = {
 export default function BudgetPage() {
   const [activeTab, setActiveTab] = React.useState<"summary" | "expenses" | "payments">("summary");
   const [budget, setBudget] = React.useState<BudgetSummary>(MOCK_BUDGET);
-  const [expenses, setExpenses] = React.useState<Expense[]>(MOCK_EXPENSES);
-  const [payments, setPayments] = React.useState<PaymentRecord[]>(MOCK_PAYMENTS);
+  const [expenses, setExpenses] = React.useState<Expense[]>([]);
+  const [payments, setPayments] = React.useState<PaymentRecord[]>([]);
+
+  React.useEffect(() => {
+    setBudget(ShaadiStorage.getBudget());
+    setExpenses(ShaadiStorage.getExpenses());
+    setPayments(ShaadiStorage.getPayments());
+  }, []);
 
   // Modals state
   const [isExpenseModalOpen, setIsExpenseModalOpen] = React.useState(false);
@@ -114,7 +121,9 @@ export default function BudgetPage() {
       if (!res.success) {
         setFormError(res.error || "Failed to record expense.");
       } else if (res.data) {
-        setExpenses((prev) => [res.data as Expense, ...prev]);
+        const updated = [res.data as Expense, ...expenses];
+        setExpenses(updated);
+        ShaadiStorage.saveExpenses(updated);
         setIsExpenseModalOpen(false);
       }
     } catch {
@@ -138,7 +147,9 @@ export default function BudgetPage() {
       if (!res.success) {
         setFormError(res.error || "Failed to record payment voucher.");
       } else if (res.data) {
-        setPayments((prev) => [res.data as PaymentRecord, ...prev]);
+        const updated = [res.data as PaymentRecord, ...payments];
+        setPayments(updated);
+        ShaadiStorage.savePayments(updated);
         setIsPaymentModalOpen(false);
       }
     } catch {
