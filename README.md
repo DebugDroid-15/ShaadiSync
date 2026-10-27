@@ -322,10 +322,11 @@ The automated test suite (`vitest`) enforces end-to-end reliability:
 
 ## 12. Deployment & Launch Status
 
+- **Production Deployment:** [https://shaadisync-rho.vercel.app](https://shaadisync-rho.vercel.app) (Verified Live)
 - **Architecture:** Next.js 15 App Router + Edge Middleware + Supabase PostgreSQL.
 - **Recommended Host:** Vercel (Hobby / Pro) for native Next.js edge capabilities and zero-cost serverless execution.
 - **Runbook:** See comprehensive operational guide in [DEPLOYMENT.md](file:///c:/PROJECTS/ShaadiSync/DEPLOYMENT.md).
-- **Environment Status:** Local production builds fully verified (`19/19 static routes + dynamic /invite/[token] + edge middleware`). Deployment to live production awaits project owner provisioning of production Supabase credentials and target domain authorization.
+- **Environment Status:** Live production build verified with active Content Security Policy and defense-in-depth security headers.
 
 ---
 

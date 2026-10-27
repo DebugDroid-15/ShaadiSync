@@ -306,4 +306,4 @@
 - **Commit SHA:** `5a55a363717df30294e7724a259928509c2794fc`
 - **Branch:** `main`
 - **Remote Push Status:** Canonical push to `https://github.com/DebugDroid-15/ShaadiSync`
-- **Deployment Status:** Local production build verified & release runbook published (`DEPLOYMENT.md`). Hosting target identified (Vercel). Production deployment awaiting live cloud project credentials from project owner.
+- **Deployment Status:** Live on Vercel at [https://shaadisync-rho.vercel.app](https://shaadisync-rho.vercel.app) (Verified HTTP 200 OK, active CSP & security headers, Supabase backend connected).
