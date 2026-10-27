@@ -55,6 +55,13 @@ import {
   ScrollFestiveIndicator,
 } from "@/components/ui/royal-wedding-elements";
 import { WeddingToranHeader, FloatingShaadiMotifs } from "@/components/ui/shaadi-decorations";
+import {
+  RoyalCanvasPetalShower,
+  AnimatedMandalaHero,
+  AnimatedFlickerDiya,
+  ShaadiCelebrationLauncher,
+  AnimatedShaadiMusicBanner,
+} from "@/components/ui/shaadi-motion-graphics";
 
 export default function LandingPage() {
   return (
@@ -62,10 +69,13 @@ export default function LandingPage() {
       {/* 1. Scroll-driven festive progress indicator */}
       <ScrollFestiveIndicator />
 
-      {/* 2. Floating Festive Motifs across Entire Scroll */}
+      {/* 2. Dynamic Live Canvas Petal & Starlight Shower (Marigold, Crimson Rose & Gold Glints) */}
+      <RoyalCanvasPetalShower />
+
+      {/* 3. Floating Festive Motifs across Entire Scroll */}
       <FloatingShaadiMotifs />
 
-      {/* 3. Traditional Marigold Toran Garland across Top Header */}
+      {/* 4. Traditional Marigold Toran Garland across Top Header */}
       <WeddingToranHeader />
 
       {/* =========================================================================
@@ -76,10 +86,15 @@ export default function LandingPage() {
         <PalaceCornerJali position="top-right" />
         <div className="absolute inset-0 bg-jali-pattern opacity-25 pointer-events-none" />
 
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+        {/* Dynamic Rotating Royal Palace Mandala Aura in Hero Background */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0 opacity-40 sm:opacity-55 scale-90 sm:scale-110">
+          <AnimatedMandalaHero />
+        </div>
+
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center z-10">
           {/* Auspicious Badge */}
           <div className="inline-flex items-center gap-2 rounded-full border border-gold-300 bg-gold-50/90 px-4 py-1.5 text-xs font-semibold text-gold-900 shadow-xs mb-6">
-            <Sparkles className="h-3.5 w-3.5 text-gold-600 animate-pulse" />
+            <AnimatedFlickerDiya size="sm" />
             <span className="font-serif tracking-wider uppercase text-[11px]">
               ₹0 Free Forever Tier • 22 Indian Languages • Zero Paid API Bills
             </span>
@@ -121,6 +136,11 @@ export default function LandingPage() {
             </Link>
           </div>
 
+          {/* Interactive Genda Phool Celebration Trigger */}
+          <div className="mt-6 flex justify-center">
+            <ShaadiCelebrationLauncher />
+          </div>
+
           {/* Four Core Trust Pillars */}
           <div className="mt-14 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto pt-8 border-t border-gold-300/60 text-left">
             <div className="flex items-center gap-3 bg-white/80 backdrop-blur-xs p-3.5 rounded-xl border border-gold-200/80 shadow-xs">
@@ -156,8 +176,10 @@ export default function LandingPage() {
       </section>
 
       {/* =========================================================================
-          SECTION B: DECORATIVE TRANSITION INTO THE STORY
+          SECTION B: DECORATIVE TRANSITION INTO THE STORY & SHEHNAI MUSIC BANNER
           ========================================================================= */}
+      <AnimatedShaadiMusicBanner />
+
       <RoyalSectionDivider
         title="Royal Command Center"
         subtitle="Precision engineering designed for the grandeur of Indian weddings"

@@ -88,6 +88,104 @@ body {
   }
 }
 
+@keyframes spin-extremely-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spin-reverse-slow {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes flame-flicker {
+  0%, 100% {
+    transform: scale(1) rotate(-1deg);
+    opacity: 0.95;
+  }
+  25% {
+    transform: scale(1.15, 0.9) rotate(2deg);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.9, 1.1) rotate(-2deg);
+    opacity: 0.9;
+  }
+  75% {
+    transform: scale(1.08, 0.95) rotate(1deg);
+    opacity: 1;
+  }
+}
+
+@keyframes music-bar-1 {
+  0%, 100% { height: 6px; }
+  50% { height: 22px; }
+}
+
+@keyframes music-bar-2 {
+  0%, 100% { height: 18px; }
+  50% { height: 8px; }
+}
+
+@keyframes music-bar-3 {
+  0%, 100% { height: 10px; }
+  50% { height: 24px; }
+}
+
+@keyframes music-bar-4 {
+  0%, 100% { height: 22px; }
+  50% { height: 12px; }
+}
+
+@keyframes bounce-gentle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-spin-extremely-slow {
+  animation: spin-extremely-slow 40s linear infinite;
+}
+
+.animate-spin-reverse-slow {
+  animation: spin-reverse-slow 30s linear infinite;
+}
+
+.animate-flame-flicker {
+  animation: flame-flicker 0.8s ease-in-out infinite;
+}
+
+.animate-bounce-gentle {
+  animation: bounce-gentle 2.5s ease-in-out infinite;
+}
+
+.animate-music-bar-1 {
+  animation: music-bar-1 1.1s ease-in-out infinite;
+}
+
+.animate-music-bar-2 {
+  animation: music-bar-2 0.8s ease-in-out infinite;
+}
+
+.animate-music-bar-3 {
+  animation: music-bar-3 1.3s ease-in-out infinite;
+}
+
+.animate-music-bar-4 {
+  animation: music-bar-4 0.95s ease-in-out infinite;
+}
+
 .animate-float-slow {
   animation: float-slow 7s ease-in-out infinite;
 }
