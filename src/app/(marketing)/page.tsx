@@ -56,12 +56,11 @@ import {
 } from "@/components/ui/royal-wedding-elements";
 import { WeddingToranHeader, FloatingShaadiMotifs } from "@/components/ui/shaadi-decorations";
 import {
-  RoyalCanvasPetalShower,
   AnimatedMandalaHero,
   AnimatedFlickerDiya,
-  ShaadiCelebrationLauncher,
   AnimatedShaadiMusicBanner,
 } from "@/components/ui/shaadi-motion-graphics";
+import { AerialDronePetalShowerLauncher } from "@/components/ui/aerial-flower-shower";
 import { SacredHavanPherasSplashScreen } from "@/components/ui/sacred-havan-splash-screen";
 import { InteractiveFoodCalculationSection } from "@/components/ui/interactive-food-calculation";
 import { InteractiveCrowdCalculationSection } from "@/components/ui/interactive-crowd-calculation";
@@ -79,13 +78,10 @@ export default function LandingPage() {
       {/* 1. Scroll-driven festive progress indicator */}
       <ScrollFestiveIndicator />
 
-      {/* 2. Dynamic Live Canvas Petal & Starlight Shower (Marigold, Crimson Rose & Gold Glints) */}
-      <RoyalCanvasPetalShower />
-
-      {/* 3. Floating Festive Motifs across Entire Scroll */}
+      {/* 2. Floating Festive Motifs across Entire Scroll */}
       <FloatingShaadiMotifs />
 
-      {/* 4. Traditional Marigold Toran Garland across Top Header */}
+      {/* 3. Traditional Marigold Toran Garland across Top Header */}
       <WeddingToranHeader />
 
       {/* =========================================================================
@@ -146,9 +142,9 @@ export default function LandingPage() {
             </Link>
           </div>
 
-          {/* Interactive Genda Phool Celebration Trigger */}
+          {/* Interactive Aerial Drone/Helicopter Genda Phool Celebration Trigger */}
           <div className="mt-6 flex justify-center">
-            <ShaadiCelebrationLauncher />
+            <AerialDronePetalShowerLauncher />
           </div>
 
           {/* Four Core Trust Pillars */}
