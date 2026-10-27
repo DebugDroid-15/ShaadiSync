@@ -30,6 +30,7 @@ export const metadata: Metadata = {
       },
     ],
   },
+  manifest: "/manifest.json",
   icons: {
     icon: [
       { url: "/favicon.ico" },
@@ -46,6 +47,25 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#172B4D" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                  navigator.serviceWorker.register('/sw.js').catch(function(err) {
+                    console.info('ServiceWorker registration skipped:', err);
+                  });
+                });
+              }
+            `,
+          }}
+        />
+      </head>
       <body className="min-h-screen bg-ivory-100 text-navy-900 font-sans antialiased selection:bg-gold-500/20 selection:text-navy-900">
         {children}
       </body>

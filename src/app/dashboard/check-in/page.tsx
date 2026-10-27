@@ -39,6 +39,7 @@ import {
 } from "@/types/models";
 import { scanCheckinAction, manualCheckinAction } from "@/lib/actions/checkin";
 import { CameraQrScanner } from "@/components/check-in/camera-qr-scanner";
+import { gateAudio } from "@/lib/audio";
 
 export default function CheckInDeskPage() {
   const [selectedFunctionId, setSelectedFunctionId] = React.useState<string>(MOCK_FUNCTIONS[0].id);
@@ -113,6 +114,7 @@ export default function CheckInDeskPage() {
     try {
       const res = await scanCheckinAction(formData);
       if (res.isDuplicate) {
+        gateAudio.playWarningBuzz();
         setScanResult({
           type: "duplicate",
           title: "⚠️ Duplicate Scan Detected",
@@ -120,12 +122,14 @@ export default function CheckInDeskPage() {
           timestamp: res.duplicateDetails?.checkedInAt,
         });
       } else if (!res.success) {
+        gateAudio.playWarningBuzz();
         setScanResult({
           type: "error",
           title: "❌ Invalid QR Pass",
           description: res.error || "Pass verification failed.",
         });
       } else {
+        gateAudio.playSuccessChime();
         const admittedName = (res.data as AttendanceRecord)?.guestName || "Guest";
         setScanResult({
           type: "success",
@@ -177,18 +181,21 @@ export default function CheckInDeskPage() {
     try {
       const res = await manualCheckinAction(formData);
       if (res.isDuplicate) {
+        gateAudio.playWarningBuzz();
         setScanResult({
           type: "duplicate",
           title: "⚠️ Already Checked In",
           description: `${guest.firstName} ${guest.lastName} has already entered.`,
         });
       } else if (!res.success) {
+        gateAudio.playWarningBuzz();
         setScanResult({
           type: "error",
           title: "Check-in Blocked",
           description: res.error || "Manual admission failed.",
         });
       } else {
+        gateAudio.playSuccessChime();
         setScanResult({
           type: "success",
           title: "✅ Manual Admission Recorded",

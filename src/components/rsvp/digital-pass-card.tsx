@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import QRCode from "qrcode";
-import { Download, QrCode, Sparkles } from "lucide-react";
+import { Download, QrCode, Sparkles, Smartphone, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface DigitalPassCardProps {
@@ -196,15 +196,39 @@ export function DigitalPassCard({
         Show this QR code at the entrance gate scanner or present the bearer code to the hospitality team.
       </p>
 
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={downloadPass}
-        className="text-xs gap-1.5 border-gold-300 hover:bg-gold-50 font-semibold"
-      >
-        <Download className="h-3.5 w-3.5 text-gold-600" />
-        Save Pass to Phone
-      </Button>
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={downloadPass}
+          className="w-full sm:w-auto text-xs gap-1.5 border-gold-300 hover:bg-gold-50 font-semibold"
+        >
+          <Download className="h-3.5 w-3.5 text-gold-600" />
+          Save Pass to Phone
+        </Button>
+
+        {typeof navigator !== "undefined" && "share" in navigator && (
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={async () => {
+              try {
+                await navigator.share({
+                  title: `${eventName} Pass • ${weddingTitle}`,
+                  text: `My Entry Pass for ${eventName} (${guestName}, ${permittedCount} Guests). Token: ${passCode}`,
+                  url: window.location.href,
+                });
+              } catch {
+                // User cancelled share
+              }
+            }}
+            className="w-full sm:w-auto text-xs gap-1.5 font-semibold text-navy-800"
+          >
+            <Share2 className="h-3.5 w-3.5 text-navy-700" />
+            Share / Add to Wallet
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

@@ -1,0 +1,22 @@
+{
+  "name": "ShaadiSync - Indian Wedding Operations",
+  "short_name": "ShaadiSync",
+  "description": "Operating system for Indian wedding logistics, multi-language RSVP & gate check-in.",
+  "start_url": "/dashboard/check-in",
+  "display": "standalone",
+  "background_color": "#FAF8F2",
+  "theme_color": "#172B4D",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
