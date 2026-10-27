@@ -12,31 +12,28 @@ export function SacredHavanPherasSplashScreen({ onComplete }: { onComplete?: () 
   const [currentPhera, setCurrentPhera] = React.useState(1);
 
   React.useEffect(() => {
-    // Respect reduced motion
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReducedMotion) {
-      setPhase("hidden");
-      onComplete?.();
-      return;
-    }
+    // Lock body scroll while splash screen is active
+    document.body.style.overflow = "hidden";
 
     // Advance 7 Phera vows illusion
     const interval = setInterval(() => {
       setCurrentPhera((prev) => (prev < 7 ? prev + 1 : 7));
-    }, 380);
+    }, 400);
 
-    // Fade out after 2.8s
+    // Fade out after 3.2s
     const timer = setTimeout(() => {
       setPhase("fading");
+      document.body.style.overflow = "";
       setTimeout(() => {
         setPhase("hidden");
         onComplete?.();
       }, 700);
-    }, 2800);
+    }, 3200);
 
     return () => {
       clearInterval(interval);
       clearTimeout(timer);
+      document.body.style.overflow = "";
     };
   }, [onComplete]);
 
@@ -54,23 +51,28 @@ export function SacredHavanPherasSplashScreen({ onComplete }: { onComplete?: () 
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-radial from-[#1e070e] via-[#0f172a] to-[#080c16] text-white transition-opacity duration-700 select-none ${
+      className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#070b14] text-white transition-opacity duration-700 select-none ${
         phase === "fading" ? "opacity-0 pointer-events-none" : "opacity-100"
       }`}
+      style={{
+        background: "radial-gradient(circle at center, #260914 0%, #0d1527 50%, #060911 100%)",
+      }}
     >
       {/* Background Sacred Jaali Aura */}
       <div className="absolute inset-0 bg-jali-pattern opacity-15 pointer-events-none" />
 
       {/* Skipping Button */}
       <button
+        type="button"
         onClick={() => {
           setPhase("fading");
+          document.body.style.overflow = "";
           setTimeout(() => {
             setPhase("hidden");
             onComplete?.();
           }, 300);
         }}
-        className="absolute top-6 right-6 text-xs font-serif text-gold-300 hover:text-white border border-gold-400/30 px-3 py-1 rounded-full bg-navy-950/60 backdrop-blur-xs transition-all z-50"
+        className="absolute top-6 right-6 text-xs font-serif text-gold-300 hover:text-white border border-gold-400/40 px-3.5 py-1.5 rounded-full bg-navy-950/80 backdrop-blur-md transition-all z-[10000] cursor-pointer shadow-royal"
       >
         Skip Ceremony →
       </button>
@@ -224,3 +226,4 @@ export function SacredHavanPherasSplashScreen({ onComplete }: { onComplete?: () 
     </div>
   );
 }
+

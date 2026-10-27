@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import confetti from "canvas-confetti";
 
 /**
  * High-performance Canvas Petal & Sparkle Shower
@@ -279,10 +280,9 @@ export function AnimatedFlickerDiya({ size = "md" }: { size?: "sm" | "md" | "lg"
 export function ShaadiCelebrationLauncher() {
   const [isRaining, setIsRaining] = React.useState(false);
 
-  const launchBurst = async () => {
+  const launchBurst = () => {
     try {
       setIsRaining(true);
-      const confetti = (await import("canvas-confetti")).default;
 
       // Authentic Indian Wedding Palette:
       // Saffron Orange, Marigold Amber, Royal Crimson, Festive Gold, Emerald Green
@@ -290,56 +290,60 @@ export function ShaadiCelebrationLauncher() {
 
       // Wave 1: Center fountain burst
       confetti({
-        particleCount: 120,
-        spread: 90,
+        particleCount: 140,
+        spread: 100,
         origin: { y: 0.65 },
         colors,
-        ticks: 250,
-        gravity: 0.8,
-        scalar: 1.2,
+        ticks: 300,
+        gravity: 0.75,
+        scalar: 1.25,
+        zIndex: 99999,
       });
 
       // Wave 2: Left side celebratory cannon (at 150ms)
       setTimeout(() => {
         confetti({
-          particleCount: 80,
+          particleCount: 90,
           angle: 60,
-          spread: 70,
+          spread: 75,
           origin: { x: 0, y: 0.7 },
           colors,
-          ticks: 280,
+          ticks: 300,
           gravity: 0.75,
-          scalar: 1.3,
+          scalar: 1.35,
+          zIndex: 99999,
         });
       }, 150);
 
       // Wave 3: Right side celebratory cannon (at 300ms)
       setTimeout(() => {
         confetti({
-          particleCount: 80,
+          particleCount: 90,
           angle: 120,
-          spread: 70,
+          spread: 75,
           origin: { x: 1, y: 0.7 },
           colors,
-          ticks: 280,
+          ticks: 300,
           gravity: 0.75,
-          scalar: 1.3,
+          scalar: 1.35,
+          zIndex: 99999,
         });
       }, 300);
 
-      // Wave 4: Continuous overhead Petal Shower (downpour for 2 seconds)
-      const end = Date.now() + 1800;
+      // Wave 4: Continuous overhead Petal Shower (downpour for 2.5 seconds)
+      const end = Date.now() + 2500;
       const frame = () => {
         confetti({
-          particleCount: 4,
+          particleCount: 6,
           angle: 90,
-          spread: 120,
+          spread: 140,
           origin: { x: Math.random(), y: -0.1 },
           colors,
-          ticks: 220,
+          ticks: 250,
           gravity: 0.6,
-          scalar: 1.4,
+          scalar: 1.45,
           drift: (Math.random() - 0.5) * 1.5,
+          zIndex: 99999,
         });
 
         if (Date.now() < end) {
@@ -350,7 +354,7 @@ export function ShaadiCelebrationLauncher() {
       };
       requestAnimationFrame(frame);
     } catch (e) {
-      console.warn("Celebration confetti launch ignored", e);
+      console.warn("Celebration confetti launch error", e);
       setIsRaining(false);
     }
   };
