@@ -15,6 +15,9 @@ export function CameraQrScanner({ onScan, isActive }: CameraQrScannerProps) {
   const scannerRef = React.useRef<any>(null);
   const containerId = "html5qr-code-full-region";
 
+  const [availableCameras, setAvailableCameras] = React.useState<Array<{ id: string; label: string }>>([]);
+  const [selectedCameraId, setSelectedCameraId] = React.useState<string>("");
+
   const stopScanner = React.useCallback(async () => {
     if (scannerRef.current) {
       try {
@@ -28,12 +31,24 @@ export function CameraQrScanner({ onScan, isActive }: CameraQrScannerProps) {
     setCameraStarted(false);
   }, []);
 
-  const startScanner = React.useCallback(async () => {
+  const startScanner = React.useCallback(async (camId?: string) => {
     setCameraError(null);
     try {
       const { Html5Qrcode } = await import("html5-qrcode");
       if (scannerRef.current) {
         await stopScanner();
+      }
+
+      // Query available video devices on PC or mobile
+      let devices: Array<{ id: string; label: string }> = [];
+      try {
+        const devs = await Html5Qrcode.getCameras();
+        if (devs && devs.length > 0) {
+          devices = devs.map((d) => ({ id: d.id, label: d.label || `Camera ${d.id.substring(0, 5)}` }));
+          setAvailableCameras(devices);
+        }
+      } catch (err) {
+        console.warn("Could not enumerate cameras prior to start:", err);
       }
 
       const html5QrCode = new Html5Qrcode(containerId);
@@ -53,25 +68,37 @@ export function CameraQrScanner({ onScan, isActive }: CameraQrScannerProps) {
         aspectRatio: 1.0,
       };
 
-      await html5QrCode.start(
-        { facingMode: "environment" },
-        config,
-        qrCodeSuccessCallback,
-        undefined
-      );
+      // Determine camera target:
+      // 1. Specified device ID if selected
+      // 2. First enumerated camera device (PC webcam default)
+      // 3. Fallback to facingMode "environment" with auto-fallback to "user"
+      const targetCam = camId || selectedCameraId || (devices.length > 0 ? devices[0].id : null);
+
+      if (targetCam) {
+        await html5QrCode.start(targetCam, config, qrCodeSuccessCallback, undefined);
+      } else {
+        // Try environment first, if Overconstrained/NotFoundError fall back to user camera (laptop/PC webcam)
+        try {
+          await html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback, undefined);
+        } catch (envErr) {
+          console.info("Environment camera not found, trying user webcam:", envErr);
+          await html5QrCode.start({ facingMode: "user" }, config, qrCodeSuccessCallback, undefined);
+        }
+      }
+
       setCameraStarted(true);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       if (msg.includes("NotAllowedError") || msg.includes("Permission denied")) {
-        setCameraError("Camera permission denied. Please allow camera access in browser settings.");
-      } else if (msg.includes("NotFoundError")) {
-        setCameraError("No optical camera found on this device.");
+        setCameraError("Camera permission denied. Please allow camera access in your browser address bar.");
+      } else if (msg.includes("NotFoundError") || msg.includes("OverconstrainedError")) {
+        setCameraError("No compatible optical webcam found on this device.");
       } else {
         setCameraError("Unable to access camera: " + msg);
       }
       setCameraStarted(false);
     }
-  }, [onScan, stopScanner]);
+  }, [onScan, stopScanner, selectedCameraId]);
 
   React.useEffect(() => {
     return () => {
@@ -103,7 +130,7 @@ export function CameraQrScanner({ onScan, isActive }: CameraQrScannerProps) {
 
             <Button
               size="sm"
-              onClick={startScanner}
+              onClick={() => startScanner()}
               className="gap-2 bg-burgundy-600 hover:bg-burgundy-700 text-white font-semibold"
             >
               <Camera className="h-4 w-4" />
@@ -113,7 +140,23 @@ export function CameraQrScanner({ onScan, isActive }: CameraQrScannerProps) {
         )}
 
         {cameraStarted && (
-          <div className="absolute bottom-3 left-0 right-0 flex justify-center z-10">
+          <div className="absolute bottom-3 left-0 right-0 flex flex-col items-center gap-2 z-10 px-4">
+            {availableCameras.length > 1 && (
+              <select
+                value={selectedCameraId}
+                onChange={(e) => {
+                  setSelectedCameraId(e.target.value);
+                  startScanner(e.target.value);
+                }}
+                className="text-xs bg-white/90 backdrop-blur-sm border border-slate-300 rounded-lg px-2 py-1 text-navy-900 font-medium max-w-[260px] truncate"
+              >
+                {availableCameras.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.label}
+                  </option>
+                ))}
+              </select>
+            )}
             <Button
               size="sm"
               variant="secondary"
