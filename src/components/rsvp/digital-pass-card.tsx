@@ -37,12 +37,124 @@ export function DigitalPassCard({
 
   function downloadPass() {
     if (!qrDataUrl) return;
-    const a = document.createElement("a");
-    a.href = qrDataUrl;
-    a.download = `ShaadiSync_Pass_${passCode}.png`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+
+    // Render a high-resolution royal commemorative pass canvas with all event details
+    const canvas = document.createElement("canvas");
+    const width = 640;
+    const height = 920;
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // 1. Warm Ivory background
+    ctx.fillStyle = "#FAF8F2";
+    ctx.fillRect(0, 0, width, height);
+
+    // 2. Outer golden luxury border
+    ctx.strokeStyle = "#C6A15B";
+    ctx.lineWidth = 8;
+    ctx.strokeRect(16, 16, width - 32, height - 32);
+
+    ctx.strokeStyle = "#172B4D";
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(26, 26, width - 52, height - 52);
+
+    // 3. Top Royal Gradient Header Bar
+    const grad = ctx.createLinearGradient(30, 30, width - 30, 30);
+    grad.addColorStop(0, "#C6A15B");
+    grad.addColorStop(0.5, "#8B1E3F"); // burgundy
+    grad.addColorStop(1, "#C6A15B");
+    ctx.fillStyle = grad;
+    ctx.fillRect(28, 28, width - 56, 12);
+
+    // 4. Header title text
+    ctx.textAlign = "center";
+    ctx.font = "bold 16px sans-serif";
+    ctx.fillStyle = "#8B1E3F";
+    ctx.fillText("✨ OFFICIAL WEDDING ENTRY PASS ✨", width / 2, 75);
+
+    // 5. Ceremony Event Name
+    ctx.font = "bold 26px serif";
+    ctx.fillStyle = "#172B4D";
+    ctx.fillText(eventName, width / 2, 115);
+
+    // 6. Wedding Couple Name
+    ctx.font = "500 18px serif";
+    ctx.fillStyle = "#5A6A85";
+    ctx.fillText(weddingTitle, width / 2, 145);
+
+    // 7. QR Code Frame Box
+    const qrSize = 340;
+    const qrX = (width - qrSize) / 2;
+    const qrY = 175;
+
+    ctx.fillStyle = "#FFFFFF";
+    ctx.strokeStyle = "#E0C48A";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.roundRect(qrX - 12, qrY - 12, qrSize + 24, qrSize + 24, 16);
+    ctx.fill();
+    ctx.stroke();
+
+    // Draw QR image
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = qrDataUrl;
+    img.onload = () => {
+      ctx.drawImage(img, qrX, qrY, qrSize, qrSize);
+
+      // 8. Attendee details card box
+      const cardY = qrY + qrSize + 32;
+      const cardWidth = 480;
+      const cardHeight = 160;
+      const cardX = (width - cardWidth) / 2;
+
+      ctx.fillStyle = "#FFFFFF";
+      ctx.strokeStyle = "#CBD5E1";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(cardX, cardY, cardWidth, cardHeight, 16);
+      ctx.fill();
+      ctx.stroke();
+
+      // Attendee label
+      ctx.font = "bold 13px sans-serif";
+      ctx.fillStyle = "#64748B";
+      ctx.fillText("ATTENDEE", width / 2, cardY + 30);
+
+      // Guest Full Name
+      ctx.font = "bold 24px sans-serif";
+      ctx.fillStyle = "#172B4D";
+      ctx.fillText(guestName, width / 2, cardY + 65);
+
+      // Admitting count
+      ctx.font = "bold 16px sans-serif";
+      ctx.fillStyle = "#047857"; // emerald-700
+      ctx.fillText(`Admitting ${permittedCount} Person${permittedCount > 1 ? "s" : ""}`, width / 2, cardY + 98);
+
+      // Pass code pill
+      ctx.font = "bold 15px monospace";
+      ctx.fillStyle = "#334155";
+      ctx.fillText(`TOKEN: ${passCode}`, width / 2, cardY + 135);
+
+      // 9. Footer instructions
+      ctx.font = "13px sans-serif";
+      ctx.fillStyle = "#64748B";
+      ctx.fillText("Present this QR pass at the entrance gate scanner.", width / 2, height - 70);
+
+      ctx.font = "italic 11px sans-serif";
+      ctx.fillStyle = "#94A3B8";
+      ctx.fillText("Powered by ShaadiSync • Team SHATRUJEET", width / 2, height - 46);
+
+      // Trigger high-res PNG download
+      const a = document.createElement("a");
+      a.href = canvas.toDataURL("image/png");
+      a.download = `ShaadiSync_${eventName.replace(/[^a-zA-Z0-9]/g, "_")}_${passCode}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    };
   }
 
   return (
