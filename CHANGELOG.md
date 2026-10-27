@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.9.0] - Phase 9 Cross-Module Integration, Hardening & Comprehensive Documentation - 2026-10-27
+### Added
+- Edge middleware security hardening in `src/lib/supabase/middleware.ts` injecting defense-in-depth HTTP security headers (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `X-XSS-Protection: 1; mode=block`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy: camera=(self), microphone=(), geolocation=()`).
+- Formula injection (CSV DDE) protection in `src/lib/csv.ts` escaping cell values beginning with dangerous triggers (`=`, `+`, `-`, `@`, `\t`, `\r`) with single-quote prefix.
+- Hardening & integration automated test suite `tests/hardening.test.ts` (5 tests) asserting cross-module workspace scoping, CSV formula neutralization, vendor financial invariants, budget variance calculation matches, and catering guarantee vs physical check-in domain isolation.
+- Comprehensive root `README.md` complete with production architecture diagram, directory layout, environment configuration, database schema overview, end-to-end operational workflows, troubleshooting guide, and closed-source proprietary notice.
+### Verified
+- Full automated test suite passes with 100% green coverage (81 tests across 11 test files).
+- Production build (`npm run build`) and strict TypeScript type-checking (`npm run type-check`) validated with 0 errors.
+
 ## [0.8.0] - Phase 8 QR Passes, Check-in, Gate Operations and Event-Day Attendance - 2026-10-27
 ### Added
 - Schema migration `20261026000007_qr_passes_and_checkin.sql` introducing `checkin_gates`, `qr_passes`, `attendance_records`, and `checkin_audit_logs` tables with atomic concurrency protections, unique check-in constraints, and multi-tenant RLS policies.

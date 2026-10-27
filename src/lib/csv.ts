@@ -173,8 +173,12 @@ export function exportGuestsToCsv(
 
   const escapeCell = (val: unknown): string => {
     if (val === null || val === undefined) return "";
-    const str = String(val);
-    if (str.includes(",") || str.includes('"') || str.includes("\n")) {
+    let str = String(val);
+    // Protect against spreadsheet formula injection (=, +, -, @, \t, \r)
+    if (/^[=+\-@\t\r]/.test(str)) {
+      str = `'${str}`;
+    }
+    if (str.includes(",") || str.includes('"') || str.includes("\n") || str.includes("\r")) {
       return `"${str.replace(/"/g, '""')}"`;
     }
     return str;

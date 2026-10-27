@@ -28,3 +28,13 @@
 - **Decision:** Protect all original code, schemas, and assets under proprietary licensing drafts (`LICENSE_PROPRIETARY.md`). No copyleft or open-source licenses will be applied to original project code.
 - **Consequences:** Preserves full intellectual property rights for the founding team while respecting third-party open-source library licenses.
 
+## ADR 005: Security Defense-in-Depth and Formula Injection Mitigation
+- **Date:** 2026-10-27
+- **Status:** Accepted
+- **Context:** Exporting guest, logistics, and gate check-in manifests as CSV files exposes spreadsheet users to formula injection (CSV DDE) vulnerabilities. Concurrently, public and authenticated routes must protect against clickjacking, MIME sniffing, and unauthorized browser feature probing.
+- **Decision:**
+  1. Escape all CSV cell contents beginning with formula triggers (`=`, `+`, `-`, `@`, `\t`, `\r`) with a leading single quote (`'`).
+  2. Implement global HTTP security headers in Edge middleware (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `X-XSS-Protection: 1; mode=block`, `Referrer-Policy: strict-origin-when-cross-origin`, and `Permissions-Policy: camera=(self), microphone=(), geolocation=()`).
+- **Consequences:** Eliminates spreadsheet-based arbitrary command execution risks for wedding planners and ensures unified browser defense policies across both public RSVP pages and private dashboard spaces.
+
+
