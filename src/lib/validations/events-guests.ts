@@ -56,7 +56,7 @@ export const guestSchema = z.object({
   dietaryPref: dietaryPrefSchema.default("veg"),
   allergiesNotes: z.string().optional().nullable(),
   isVip: z.boolean().default(false),
-  invitedEventIds: z.array(z.string().uuid()).default([]),
+  invitedEventIds: z.array(z.string()).default([]),
 });
 
 // CSV Row Schema for Import Validation
