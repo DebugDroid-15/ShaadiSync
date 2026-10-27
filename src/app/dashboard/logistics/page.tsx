@@ -51,7 +51,18 @@ import { ShaadiStorage } from "@/lib/shaadi-storage";
 
 export default function LogisticsPage() {
   const [activeTab, setActiveTab] = React.useState<"parking" | "transport" | "accommodation">("parking");
-  const [summary, setSummary] = React.useState<LogisticsSummary>(MOCK_LOGISTICS_SUMMARY);
+  const [summary, setSummary] = React.useState<LogisticsSummary>({
+    parking: { totalCapacity: 0, allocatedSpaces: 0, remainingCapacity: 0, utilisationPercentage: 0 },
+    transport: { activeTrips: 0, totalSeatCapacity: 0, assignedPassengers: 0, availableSeats: 0 },
+    accommodation: {
+      totalRooms: 0,
+      occupiedRooms: 0,
+      vacantRooms: 0,
+      occupancyRate: 0,
+      upcomingArrivals: 0,
+      upcomingDepartures: 0,
+    },
+  });
   const [parkingAreas, setParkingAreas] = React.useState<ParkingArea[]>([]);
   const [parkingAllocs, setParkingAllocs] = React.useState<ParkingAllocation[]>([]);
   const [trips, setTrips] = React.useState<TransportTrip[]>([]);
@@ -59,12 +70,15 @@ export default function LogisticsPage() {
   const [roomAllocs, setRoomAllocs] = React.useState<RoomAllocation[]>([]);
 
   React.useEffect(() => {
-    setSummary(ShaadiStorage.getLogisticsSummary());
-    setParkingAreas(ShaadiStorage.getParkingAreas());
-    setParkingAllocs(ShaadiStorage.getParkingAllocations());
-    setTrips(ShaadiStorage.getTransportTrips());
-    setRooms(ShaadiStorage.getRoomInventory());
-    setRoomAllocs(ShaadiStorage.getRoomAllocations());
+    const s = ShaadiStorage.getLogisticsSummary();
+    if (s && s.parking && s.transport && s.accommodation) {
+      setSummary(s);
+    }
+    setParkingAreas(ShaadiStorage.getParkingAreas() || []);
+    setParkingAllocs(ShaadiStorage.getParkingAllocations() || []);
+    setTrips(ShaadiStorage.getTransportTrips() || []);
+    setRooms(ShaadiStorage.getRoomInventory() || []);
+    setRoomAllocs(ShaadiStorage.getRoomAllocations() || []);
   }, []);
 
   // Modals state
@@ -275,10 +289,10 @@ export default function LogisticsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-navy-900">
-              {summary.parking.allocatedSpaces} / {summary.parking.totalCapacity} Slots
+              {summary?.parking?.allocatedSpaces || 0} / {summary?.parking?.totalCapacity || 0} Slots
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              {summary.parking.remainingCapacity} spaces remaining ({summary.parking.utilisationPercentage}% allocated)
+              {summary?.parking?.remainingCapacity || 0} spaces remaining ({summary?.parking?.utilisationPercentage || 0}% allocated)
             </p>
           </CardContent>
         </Card>
@@ -292,10 +306,10 @@ export default function LogisticsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-navy-900">
-              {summary.transport.assignedPassengers} / {summary.transport.totalSeatCapacity} Seats
+              {summary?.transport?.assignedPassengers || 0} / {summary?.transport?.totalSeatCapacity || 0} Seats
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              {summary.transport.availableSeats} available across {summary.transport.activeTrips} active routes
+              {summary?.transport?.availableSeats || 0} available across {summary?.transport?.activeTrips || 0} active routes
             </p>
           </CardContent>
         </Card>
@@ -309,10 +323,10 @@ export default function LogisticsPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-navy-900">
-              {summary.accommodation.occupiedRooms} / {summary.accommodation.totalRooms} Rooms
+              {summary?.accommodation?.occupiedRooms || 0} / {summary?.accommodation?.totalRooms || 0} Rooms
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              {summary.accommodation.vacantRooms} vacant ({summary.accommodation.occupancyRate}% occupancy rate)
+              {summary?.accommodation?.vacantRooms || 0} vacant ({summary?.accommodation?.occupancyRate || 0}% occupancy rate)
             </p>
           </CardContent>
         </Card>
