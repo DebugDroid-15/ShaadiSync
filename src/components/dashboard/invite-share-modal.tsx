@@ -137,8 +137,20 @@ export function InviteShareModal({
               className="w-full text-xs font-semibold gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white shadow-subtle"
             >
               <MessageSquare className="h-4 w-4" />
-              Open WhatsApp Web
+              Send via WhatsApp
             </Button>
+          </a>
+        </div>
+
+        <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+          <span>Private RSVP Link:</span>
+          <a
+            href={rsvpUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="font-mono text-gold-700 hover:underline flex items-center gap-1 font-semibold"
+          >
+            Preview Guest View <ExternalLink className="h-3 w-3" />
           </a>
         </div>
       </div>

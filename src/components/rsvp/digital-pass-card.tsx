@@ -46,8 +46,8 @@ export function DigitalPassCard({
   }
 
   return (
-    <div className="rounded-2xl border-2 border-gold-300 bg-linear-to-b from-amber-50/40 via-white to-amber-50/20 p-5 shadow-lg text-center relative overflow-hidden">
-      <div className="absolute top-0 left-0 right-0 h-1.5 bg-linear-to-r from-gold-400 via-burgundy-600 to-gold-400" />
+    <div className="rounded-2xl border-2 border-gold-300 bg-gradient-to-b from-amber-50/40 via-white to-amber-50/20 p-5 shadow-lg text-center relative overflow-hidden">
+      <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-gold-400 via-burgundy-600 to-gold-400" />
 
       <div className="flex items-center justify-center gap-1.5 text-burgundy-700 font-bold text-xs uppercase tracking-wider mb-1 pt-1">
         <Sparkles className="h-3.5 w-3.5 text-gold-500" />
