@@ -75,13 +75,30 @@ export async function createEventAction(formData: FormData): Promise<EventAction
   const supabase = await createServerSupabaseClient();
   if (!supabase) return { success: false, error: "Database client unavailable." };
 
+  // Resolve wedding ID to database UUID if a mock placeholder like "wed-default" was passed
+  let targetWeddingId = valid.weddingId;
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetWeddingId);
+  if (!isUuid) {
+    const { data: wedRow } = await (supabase.from("weddings") as unknown as {
+      select: (col: string) => { limit: (n: number) => Promise<{ data: Array<{ id: string }> | null }> };
+    }).select("id").limit(1);
+    if (wedRow && wedRow.length > 0) {
+      targetWeddingId = wedRow[0].id;
+    }
+  }
+
+  // Resolve venue ID to null if not a valid UUID
+  const targetVenueId = valid.venueId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(valid.venueId)
+    ? valid.venueId
+    : null;
+
   const { data, error } = await (supabase.from("events") as unknown as {
     insert: (values: unknown[]) => { select: () => { single: () => Promise<{ data: unknown; error: { message: string } | null }> } };
   })
     .insert([
       {
-        wedding_id: valid.weddingId,
-        venue_id: valid.venueId,
+        wedding_id: targetWeddingId,
+        venue_id: targetVenueId,
         name: valid.name,
         event_type: valid.eventType,
         start_time: valid.startTime,

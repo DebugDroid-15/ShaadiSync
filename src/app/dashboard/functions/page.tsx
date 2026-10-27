@@ -22,7 +22,18 @@ export default function FunctionsPage() {
   React.useEffect(() => {
     setFunctions(ShaadiStorage.getFunctions());
     const weds = ShaadiStorage.getWeddings();
-    setActiveWedding(weds.length > 0 ? weds[0] : null);
+    if (weds.length > 0) {
+      setActiveWedding(weds[0]);
+    } else {
+      // Look up database wedding if storage was cleared
+      import("@/lib/actions/weddings").then(({ getWeddingsAction }) => {
+        getWeddingsAction().then((res) => {
+          if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+            setActiveWedding(res.data[0]);
+          }
+        });
+      });
+    }
   }, []);
 
   async function handleCreate(e: React.FormEvent<HTMLFormElement>) {
