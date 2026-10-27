@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
-  CalendarHeart,
   Bell,
   Search,
   Menu,
@@ -63,12 +63,19 @@ export default function DashboardLayout({
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
 
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-navy-700 text-gold-400">
-              <CalendarHeart className="h-5 w-5" />
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-xl border border-gold-200/60 bg-white shadow-xs flex items-center justify-center p-0.5">
+              <Image
+                src="/logo.png"
+                alt="ShaadiSync"
+                width={32}
+                height={32}
+                className="object-contain"
+                priority
+              />
             </div>
             <span className="hidden sm:inline font-bold text-lg text-navy-900">
-              Shaadi<span className="text-gold-500">Sync</span>
+              Shaadi<span className="text-burgundy-700">Sync</span>
             </span>
           </Link>
 

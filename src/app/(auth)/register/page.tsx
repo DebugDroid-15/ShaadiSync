@@ -2,8 +2,9 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { CalendarHeart, ArrowRight, Loader2, AlertCircle } from "lucide-react";
+import { ArrowRight, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -38,12 +39,19 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-ivory-100 p-4">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
-          <Link href="/" className="inline-flex items-center gap-2 mb-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-navy-700 text-gold-400 shadow-md">
-              <CalendarHeart className="h-5 w-5" />
+          <Link href="/" className="inline-flex flex-col items-center gap-2 mb-4 group">
+            <div className="relative h-16 w-16 overflow-hidden rounded-2xl border border-gold-200/80 bg-white shadow-md flex items-center justify-center p-1 transition-transform group-hover:scale-105">
+              <Image
+                src="/logo.png"
+                alt="ShaadiSync"
+                width={60}
+                height={60}
+                className="object-contain"
+                priority
+              />
             </div>
-            <span className="text-2xl font-bold text-navy-900">
-              Shaadi<span className="text-gold-500">Sync</span>
+            <span className="text-2xl font-bold text-navy-900 tracking-tight">
+              Shaadi<span className="text-burgundy-700">Sync</span>
             </span>
           </Link>
           <h2 className="text-xl font-bold text-navy-900">Create your wedding organisation</h2>

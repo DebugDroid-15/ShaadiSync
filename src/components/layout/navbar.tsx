@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Sparkles, CalendarHeart, Menu, X, ShieldCheck, User } from "lucide-react";
+import Image from "next/image";
+import { Sparkles, Menu, X, ShieldCheck, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function Navbar() {
@@ -13,12 +14,19 @@ export function Navbar() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-90">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-navy-700 text-gold-400 shadow-md">
-            <CalendarHeart className="h-5 w-5" />
+          <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-xl border border-gold-200/60 bg-white shadow-sm flex items-center justify-center p-0.5">
+            <Image
+              src="/logo.png"
+              alt="ShaadiSync"
+              width={38}
+              height={38}
+              className="object-contain"
+              priority
+            />
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="text-xl font-bold tracking-tight text-navy-800">Shaadi<span className="text-gold-500">Sync</span></span>
+              <span className="text-xl font-bold tracking-tight text-navy-800">Shaadi<span className="text-burgundy-700">Sync</span></span>
               <span className="rounded-full bg-gold-100 px-2 py-0.5 text-[10px] font-semibold text-gold-900 border border-gold-300">SaaS</span>
             </div>
             <p className="text-[10px] text-slate-500 tracking-wider uppercase font-semibold">Indian Wedding Operations</p>

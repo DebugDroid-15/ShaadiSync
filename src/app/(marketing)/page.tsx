@@ -1,5 +1,6 @@
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   CalendarHeart,
   Users,
@@ -312,8 +313,16 @@ export default function LandingPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-8 border-b border-navy-800">
             <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <CalendarHeart className="h-6 w-6 text-gold-400" />
+              <div className="flex items-center gap-2.5">
+                <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-xl border border-gold-400/40 bg-white shadow-sm flex items-center justify-center p-0.5">
+                  <Image
+                    src="/logo.png"
+                    alt="ShaadiSync"
+                    width={32}
+                    height={32}
+                    className="object-contain"
+                  />
+                </div>
                 <span className="text-xl font-bold">Shaadi<span className="text-gold-400">Sync</span></span>
               </div>
               <p className="text-xs text-slate-400 leading-relaxed">

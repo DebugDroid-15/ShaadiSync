@@ -18,9 +18,24 @@ export const metadata: Metadata = {
   openGraph: {
     title: "ShaadiSync — Indian Wedding Management & Event Operations Platform",
     description: "One connected system for wedding guests, multiple functions, RSVP tracking, catering, vendors, budgets, and event-day check-in.",
-    url: "https://shaadisync.com",
+    url: "https://shaadisync-rho.vercel.app",
     siteName: "ShaadiSync",
     type: "website",
+    images: [
+      {
+        url: "/logo.png",
+        width: 1024,
+        height: 1024,
+        alt: "ShaadiSync — Indian Wedding Management",
+      },
+    ],
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/logo.png", type: "image/png" },
+    ],
+    apple: [{ url: "/logo.png" }],
   },
 };
 
