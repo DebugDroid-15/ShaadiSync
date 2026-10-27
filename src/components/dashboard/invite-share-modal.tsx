@@ -41,12 +41,14 @@ export function InviteShareModal({
   const invitation = isReminderMode
     ? generateWhatsAppRsvpReminder({
         guestName: guest.firstName,
+        phone: guest.phone,
         coupleTitle: weddingTitle,
         rsvpUrl,
         daysLeft: 12,
       })
     : generateWhatsAppInvitation({
         guestName: guest.firstName,
+        phone: guest.phone,
         coupleTitle: weddingTitle,
         ceremonyNames,
         rsvpUrl,

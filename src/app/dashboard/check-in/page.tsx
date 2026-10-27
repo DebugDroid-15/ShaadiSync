@@ -38,6 +38,7 @@ import {
   Guest,
 } from "@/types/models";
 import { scanCheckinAction, manualCheckinAction } from "@/lib/actions/checkin";
+import { CameraQrScanner } from "@/components/check-in/camera-qr-scanner";
 
 export default function CheckInDeskPage() {
   const [selectedFunctionId, setSelectedFunctionId] = React.useState<string>(MOCK_FUNCTIONS[0].id);
@@ -97,9 +98,8 @@ export default function CheckInDeskPage() {
   };
 
   // Submit QR / Token Scan
-  const handleScanSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!passCodeInput.trim()) return;
+  const processScanCode = async (code: string) => {
+    if (!code.trim()) return;
 
     setIsSubmitting(true);
     setScanResult(null);
@@ -107,7 +107,7 @@ export default function CheckInDeskPage() {
     const formData = new FormData();
     formData.append("weddingId", "wed-aarav-diya");
     formData.append("eventId", selectedFunctionId);
-    formData.append("passCode", passCodeInput.trim());
+    formData.append("passCode", code.trim());
     formData.append("admittedCount", String(admittedCount));
 
     try {
@@ -152,6 +152,11 @@ export default function CheckInDeskPage() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleScanSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await processScanCode(passCodeInput);
   };
 
   // Submit Manual Check-in
@@ -396,27 +401,28 @@ export default function CheckInDeskPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-6 space-y-5">
-              {/* Camera Simulator viewport */}
-              <div className="relative border-2 border-dashed border-slate-300 rounded-xl bg-slate-50 p-8 flex flex-col items-center justify-center text-center">
-                <div className="w-16 h-16 rounded-full bg-burgundy-50 border border-burgundy-200 flex items-center justify-center mb-3">
-                  <Camera className="h-8 w-8 text-burgundy-600" />
-                </div>
-                <h4 className="text-sm font-bold text-navy-900">Live Camera Optical Scanner</h4>
-                <p className="text-xs text-slate-500 max-w-xs mt-1">
-                  Point device camera at the guest&apos;s digital wedding pass or printed card.
-                </p>
-                <div className="mt-3">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      setPassCodeInput("pass_sng_7f8a92b");
-                    }}
-                    className="text-xs border-slate-200"
-                  >
-                    Load Sample Test Pass
-                  </Button>
-                </div>
+              {/* Live Camera Scanner */}
+              <CameraQrScanner
+                isActive={activeTab === "scanner"}
+                onScan={(code) => {
+                  setPassCodeInput(code);
+                  processScanCode(code);
+                }}
+              />
+
+              <div className="flex items-center justify-between text-xs text-slate-500 pt-1">
+                <span>Or load sample code for test scan:</span>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  type="button"
+                  onClick={() => {
+                    setPassCodeInput("pass_sng_7f8a92b");
+                  }}
+                  className="text-xs border-slate-200"
+                >
+                  Load Sample Pass
+                </Button>
               </div>
 
               {/* Form Input for Token Entry */}

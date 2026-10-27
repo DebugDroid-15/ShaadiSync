@@ -44,6 +44,7 @@ export interface PublicInvitationData {
     venueAddress: string;
     dressCode?: string | null;
     status: "invited" | "attending" | "declined" | "tentative";
+    passCode?: string | null;
   }>;
 }
 
@@ -118,12 +119,20 @@ export async function getInvitationByTokenAction(token: string): Promise<PublicI
     return { isValid: false, error: "This invitation link has expired." };
   }
 
-  // 2. Fetch specific invited functions only
+  // 2. Fetch specific invited functions and active QR passes
   const { data: invitations } = await (supabase.from("event_invitations") as unknown as {
     select: (q: string) => { eq: (col: string, val: string) => Promise<{ data: any; error: any }> };
   })
     .select("id, status, event:events(id, name, event_type, start_time, end_time, venues(name, address), dress_code)")
     .eq("guest_id", guestData.id);
+
+  const { data: qrPasses } = await (supabase.from("qr_passes") as unknown as {
+    select: (q: string) => { eq: (col: string, val: string) => Promise<{ data: any; error: any }> };
+  })
+    .select("event_id, pass_code, status")
+    .eq("guest_id", guestData.id);
+
+  const passMap = new Map((qrPasses || []).map((p: any) => [p.event_id, p.pass_code]));
 
   const events = (invitations || []).map((inv: any) => ({
     id: inv.event.id,
@@ -136,6 +145,7 @@ export async function getInvitationByTokenAction(token: string): Promise<PublicI
     venueAddress: inv.event.venues?.address || "",
     dressCode: inv.event.dress_code,
     status: inv.status,
+    passCode: passMap.get(inv.event.id) || null,
   }));
 
   return {
@@ -212,6 +222,52 @@ export async function submitRsvpAction(payload: SubmitRsvpForm): Promise<{ succe
         responded_at: new Date().toISOString(),
       })
       .eq("id", resp.eventInvitationId);
+
+    // If guest confirmed attending, auto-issue/update high-entropy QR pass for this ceremony
+    if (isAttending) {
+      try {
+        const { data: invRow } = await (supabase.from("event_invitations") as unknown as {
+          select: (q: string) => { eq: (c: string, v: string) => { single: () => Promise<{ data: { event_id: string; guest_id: string; wedding_id?: string } | null }> } };
+        })
+          .select("event_id, guest_id")
+          .eq("id", resp.eventInvitationId)
+          .single();
+
+        if (invRow) {
+          const passCode = `pass_${crypto.randomBytes(4).toString("hex")}`;
+          const tokenHash = crypto.createHash("sha256").update(passCode).digest("hex");
+          const permittedCount = (resp.adultCount || 1) + (resp.childCount || 0);
+
+          // Get wedding_id from guest
+          const { data: guestRow } = await (supabase.from("guests") as unknown as {
+            select: (q: string) => { eq: (c: string, v: string) => { single: () => Promise<{ data: { wedding_id: string } | null }> } };
+          })
+            .select("wedding_id")
+            .eq("id", invRow.guest_id)
+            .single();
+
+          if (guestRow) {
+            await (supabase.from("qr_passes") as unknown as {
+              upsert: (vals: any, opts: any) => Promise<{ error: any }>;
+            }).upsert(
+              {
+                wedding_id: guestRow.wedding_id,
+                event_id: invRow.event_id,
+                guest_id: invRow.guest_id,
+                event_invitation_id: resp.eventInvitationId,
+                pass_code: passCode,
+                token_hash: tokenHash,
+                permitted_attendees_count: permittedCount,
+                status: "active",
+              },
+              { onConflict: "event_id,guest_id" }
+            );
+          }
+        }
+      } catch (err) {
+        console.error("QR pass auto-generation error:", err);
+      }
+    }
   }
 
   revalidatePath(`/invite/${valid.token}`);

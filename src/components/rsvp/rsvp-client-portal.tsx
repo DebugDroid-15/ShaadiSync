@@ -19,6 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { DigitalPassCard } from "@/components/rsvp/digital-pass-card";
 import { PublicInvitationData, submitRsvpAction } from "@/lib/actions/rsvp";
 import { formatDate, formatTime } from "@/lib/utils";
 
@@ -154,20 +155,47 @@ export function RsvpClientPortal({ token, initialData }: RsvpClientPortalProps) 
           </div>
         </Card>
 
-        {/* Success Confirmation Banner */}
+        {/* Success Confirmation Banner & Digital QR Passes */}
         {submitted ? (
-          <div className="rounded-2xl border-2 border-emerald-300 bg-emerald-50/80 p-8 text-center space-y-3 shadow-card">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-600 text-white shadow-xs">
-              <CheckCircle2 className="h-8 w-8" />
+          <div className="space-y-6">
+            <div className="rounded-2xl border-2 border-emerald-300 bg-emerald-50/80 p-8 text-center space-y-3 shadow-card">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-600 text-white shadow-xs">
+                <CheckCircle2 className="h-8 w-8" />
+              </div>
+              <h3 className="text-2xl font-bold text-emerald-950">Dhanyavaad! RSVP Confirmed</h3>
+              <p className="text-sm text-emerald-800 max-w-md mx-auto leading-relaxed">
+                Your attendance has been confirmed. Below are your official digital QR entry passes for the events you are attending. Present these passes at the entrance gate for express admission.
+              </p>
+              <div className="pt-2">
+                <Button onClick={() => setSubmitted(false)} variant="secondary" size="sm">
+                  Edit RSVP Responses
+                </Button>
+              </div>
             </div>
-            <h3 className="text-2xl font-bold text-emerald-950">Dhanyavaad! RSVP Confirmed</h3>
-            <p className="text-sm text-emerald-800 max-w-md mx-auto leading-relaxed">
-              Your response has been recorded directly into the banquet operations registry. You can return to this link anytime if your plans change.
-            </p>
-            <div className="pt-3">
-              <Button onClick={() => setSubmitted(false)} variant="secondary" size="sm">
-                Edit Response
-              </Button>
+
+            {/* Render Digital Passes for Attending Events */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-bold text-navy-900 text-center">Your Event Admission Passes</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {events
+                  .filter((e) => (responses[e.invitationId]?.status || e.status) === "attending")
+                  .map((e) => {
+                    const resp = responses[e.invitationId];
+                    const count = (resp?.adultCount || 1) + (resp?.childCount || 0);
+                    const passCode = e.passCode || `pass_${e.id.substring(0, 4)}_${guest.id.substring(0, 4)}`;
+
+                    return (
+                      <DigitalPassCard
+                        key={e.id}
+                        passCode={passCode}
+                        guestName={`${guest.firstName} ${guest.lastName}`}
+                        eventName={e.name}
+                        weddingTitle={`${wedding.coupleBrideName} & ${wedding.coupleGroomName}`}
+                        permittedCount={count}
+                      />
+                    );
+                  })}
+              </div>
             </div>
           </div>
         ) : (

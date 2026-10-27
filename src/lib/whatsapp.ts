@@ -2,6 +2,7 @@ import { formatDate, formatTime } from "./utils";
 
 export interface WhatsAppMessageParams {
   guestName: string;
+  phone?: string;
   coupleTitle: string;
   ceremonyNames: string[];
   rsvpUrl: string;
@@ -16,6 +17,7 @@ export interface WhatsAppMessageParams {
  */
 export function generateWhatsAppInvitation({
   guestName,
+  phone,
   coupleTitle,
   ceremonyNames,
   rsvpUrl,
@@ -40,7 +42,15 @@ Warm regards & Pranam,
 The Family`.trim();
 
   const encodedText = encodeURIComponent(messageText);
-  const waUrl = `https://wa.me/?text=${encodedText}`;
+  // Clean phone number (strip non-digits)
+  let cleanPhone = (phone || "").replace(/[^0-9]/g, "");
+  if (cleanPhone.length === 10) {
+    cleanPhone = "91" + cleanPhone; // Prefix Indian country code
+  }
+
+  const waUrl = cleanPhone
+    ? `https://wa.me/${cleanPhone}?text=${encodedText}`
+    : `https://wa.me/?text=${encodedText}`;
 
   return { text: messageText, waUrl };
 }
@@ -50,14 +60,16 @@ The Family`.trim();
  */
 export function generateWhatsAppRsvpReminder({
   guestName,
+  phone,
   coupleTitle,
   rsvpUrl,
-  daysLeft,
+  daysLeft = 7,
 }: {
   guestName: string;
+  phone?: string;
   coupleTitle: string;
   rsvpUrl: string;
-  daysLeft: number;
+  daysLeft?: number;
 }): { text: string; waUrl: string } {
   const messageText = `Namaste ${guestName} ji 🙏,
 
@@ -66,10 +78,19 @@ A gentle reminder regarding the upcoming wedding celebrations of *${coupleTitle}
 To ensure appropriate banquet arrangements and seating, please kindly confirm your RSVP by clicking your personal link:
 🔗 ${rsvpUrl}
 
-Thank you!`.trim();
+Thank you!
+Warm regards,
+The Wedding Team`.trim();
 
   const encodedText = encodeURIComponent(messageText);
-  const waUrl = `https://wa.me/?text=${encodedText}`;
+  let cleanPhone = (phone || "").replace(/[^0-9]/g, "");
+  if (cleanPhone.length === 10) {
+    cleanPhone = "91" + cleanPhone;
+  }
+
+  const waUrl = cleanPhone
+    ? `https://wa.me/${cleanPhone}?text=${encodedText}`
+    : `https://wa.me/?text=${encodedText}`;
 
   return { text: messageText, waUrl };
 }
