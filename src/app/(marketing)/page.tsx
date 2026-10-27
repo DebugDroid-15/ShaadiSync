@@ -66,8 +66,8 @@ import { SacredHavanPherasSplashScreen } from "@/components/ui/sacred-havan-spla
 import { InteractiveFoodCalculationSection } from "@/components/ui/interactive-food-calculation";
 import { InteractiveCrowdCalculationSection } from "@/components/ui/interactive-crowd-calculation";
 import {
-  AnimatedBanquetDegchi,
-  AnimatedGateScannerGraphic,
+  AnimatedRoyalThaliServing,
+  AnimatedDancingCrowdCelebration,
 } from "@/components/ui/shaadi-calculation-graphics";
 
 export default function LandingPage() {
@@ -557,12 +557,9 @@ export default function LandingPage() {
               </p>
             </div>
 
-            {/* Dynamic Animated Copper Degchi Visual */}
+            {/* Dynamic Animated Royal Thali Serving Visual */}
             <div className="shrink-0 flex flex-col items-center">
-              <AnimatedBanquetDegchi />
-              <span className="text-xs font-serif text-gold-800 font-semibold mt-1">
-                Aromatic Royal Handi • Live Kitchen Sync
-              </span>
+              <AnimatedRoyalThaliServing />
             </div>
           </div>
 
@@ -597,12 +594,9 @@ export default function LandingPage() {
               </p>
             </div>
 
-            {/* Dynamic Animated Gate Scanner Graphic */}
+            {/* Dynamic Animated Dancing Baraat Crowd Graphic */}
             <div className="shrink-0 flex flex-col items-center">
-              <AnimatedGateScannerGraphic />
-              <span className="text-xs font-serif text-gold-300 font-semibold mt-1">
-                Sub-Second Gate Scanner Desk
-              </span>
+              <AnimatedDancingCrowdCelebration />
             </div>
           </div>
 
