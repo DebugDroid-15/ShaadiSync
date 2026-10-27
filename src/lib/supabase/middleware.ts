@@ -4,14 +4,14 @@ import { isSupabaseConfigured } from "@/lib/supabase/client";
 
 export async function updateSession(request: NextRequest) {
   // If Supabase is unconfigured, let requests pass through gracefully
-  // with the application's unconfigured warning banner active.
+  // with the application's unconfigured warning banner active, while still applying security headers.
   if (!isSupabaseConfigured()) {
-    return NextResponse.next({ request });
+    const res = NextResponse.next();
+    applySecurityHeaders(res);
+    return res;
   }
 
-  let supabaseResponse = NextResponse.next({
-    request,
-  });
+  let supabaseResponse = NextResponse.next();
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -48,25 +48,38 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("redirect", request.nextUrl.pathname);
-    return NextResponse.redirect(url);
+    const redirectRes = NextResponse.redirect(url);
+    applySecurityHeaders(redirectRes);
+    return redirectRes;
   }
 
   // If user is already authenticated and visits login/register, redirect to dashboard
   if (user && isAuthRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
-    return NextResponse.redirect(url);
+    const redirectRes = NextResponse.redirect(url);
+    applySecurityHeaders(redirectRes);
+    return redirectRes;
   }
 
+  applySecurityHeaders(supabaseResponse);
+
+  return supabaseResponse;
+}
+
+function applySecurityHeaders(response: NextResponse) {
   // Security Headers hardening
-  supabaseResponse.headers.set("X-Content-Type-Options", "nosniff");
-  supabaseResponse.headers.set("X-Frame-Options", "DENY");
-  supabaseResponse.headers.set("X-XSS-Protection", "1; mode=block");
-  supabaseResponse.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
-  supabaseResponse.headers.set(
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("X-XSS-Protection", "1; mode=block");
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set(
     "Permissions-Policy",
     "camera=(self), microphone=(), geolocation=()"
   );
-
-  return supabaseResponse;
+  // Content Security Policy (strict script & frame ancestry boundaries)
+  response.headers.set(
+    "Content-Security-Policy",
+    "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https: wss:; frame-ancestors 'none';"
+  );
 }

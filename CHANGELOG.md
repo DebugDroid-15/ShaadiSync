@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [1.0.0] - Phase 10 Production Readiness, Deployment & Final Release Verification - 2026-10-27
+### Added
+- Automated deployment & production readiness test suite `tests/deployment.test.ts` (3 tests) validating edge Content Security Policy (CSP), defense-in-depth header enforcement, server-only secret isolation, and all 7 production migration schema dependencies.
+- Production Deployment Runbook (`DEPLOYMENT.md`) documenting Vercel and Docker hosting architecture, environment variable secret boundaries, sequential Supabase migration procedures, daily backup and PITR strategies, gate device check-in operational fallbacks, and zero-downtime rollback runbooks.
+- Strict Content Security Policy (CSP) headers in `src/lib/supabase/middleware.ts` preventing XSS and disallowing frame embedding (`frame-ancestors 'none'`).
+- Added temporary Supabase CLI files (`supabase/.temp/`) to `.gitignore` to preserve zero-secret clean repository discipline.
+### Verified
+- Full automated test suite passes with 100% green coverage (84 tests across 12 test files).
+- Production build (`npm run build`) and strict TypeScript type-checking (`npm run type-check`) validated with 0 errors across 19 static routes, dynamic routes, and Edge Middleware.
+
 ## [0.9.0] - Phase 9 Cross-Module Integration, Hardening & Comprehensive Documentation - 2026-10-27
 ### Added
 - Edge middleware security hardening in `src/lib/supabase/middleware.ts` injecting defense-in-depth HTTP security headers (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `X-XSS-Protection: 1; mode=block`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy: camera=(self), microphone=(), geolocation=()`).

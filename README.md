@@ -262,7 +262,7 @@ npm install
 # Start local Next.js development server
 npm run dev
 
-# Run full Vitest automated test suite (81 tests across 11 suites)
+# Run full Vitest automated test suite (84 tests across 12 suites)
 npm test
 
 # Run strict TypeScript validation
@@ -315,11 +315,21 @@ The automated test suite (`vitest`) enforces end-to-end reliability:
 | `tests/passes.test.ts` | QR pass generation, token verification & duplicate check-ins | 9 |
 | `tests/security.test.ts` | Row Level Security simulation and cross-tenant isolation | 10 |
 | `tests/hardening.test.ts` | Formula injection, cross-module scopes & guarantee isolation | 5 |
-| **Total** | **All Critical Modules Verified** | **81** |
+| `tests/deployment.test.ts` | CSP headers, migration dependencies & secret isolation | 3 |
+| **Total** | **All Critical Modules Verified** | **84** |
 
 ---
 
-## 12. Troubleshooting & Operational Guide
+## 12. Deployment & Launch Status
+
+- **Architecture:** Next.js 15 App Router + Edge Middleware + Supabase PostgreSQL.
+- **Recommended Host:** Vercel (Hobby / Pro) for native Next.js edge capabilities and zero-cost serverless execution.
+- **Runbook:** See comprehensive operational guide in [DEPLOYMENT.md](file:///c:/PROJECTS/ShaadiSync/DEPLOYMENT.md).
+- **Environment Status:** Local production builds fully verified (`19/19 static routes + dynamic /invite/[token] + edge middleware`). Deployment to live production awaits project owner provisioning of production Supabase credentials and target domain authorization.
+
+---
+
+## 13. Troubleshooting & Operational Guide
 
 | Symptom | Root Cause | Resolution |
 | :--- | :--- | :--- |
