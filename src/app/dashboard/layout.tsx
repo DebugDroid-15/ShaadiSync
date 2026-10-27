@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import { Sidebar } from "@/components/layout/sidebar";
 import { WeddingSwitcher } from "@/components/dashboard/wedding-switcher";
-import { WorkspaceDataController } from "@/components/dashboard/workspace-data-controller";
 import { MOCK_WEDDINGS } from "@/lib/mock-data";
 import { Wedding } from "@/types/models";
 import { Badge } from "@/components/ui/badge";
@@ -139,9 +138,6 @@ export default function DashboardLayout({
           </button>
         </div>
       </header>
-
-      {/* 2.5 Persistent Offline Storage & Workspace Data Controller */}
-      <WorkspaceDataController />
 
       {/* 3. Main Dashboard Workspace */}
       <div className="flex flex-1">
