@@ -232,8 +232,18 @@ export async function submitRsvpAction(payload: SubmitRsvpForm): Promise<{ succe
     return { success: true };
   }
 
-  // Check if mock token submission
-  if (valid.token.startsWith("tok_aarav_diya_") || valid.token.startsWith("tok_mock_")) {
+  // Check if mock/demo token submission or mock invitation ID
+  const isMockSubmission =
+    valid.token.startsWith("tok_aarav_diya") ||
+    valid.token.startsWith("tok_mock_") ||
+    valid.token.startsWith("tok_sharma_") ||
+    valid.token.startsWith("tok_kapoor_") ||
+    valid.token.startsWith("tok_mehta_") ||
+    valid.token.startsWith("tok_singh_") ||
+    valid.token.startsWith("tok_verma_") ||
+    valid.responses.some((r) => r.eventInvitationId.startsWith("mock-inv-"));
+
+  if (isMockSubmission) {
     return { success: true };
   }
 

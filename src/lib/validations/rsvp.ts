@@ -4,7 +4,7 @@ import { dietaryPrefSchema } from "./events-guests";
 export const rsvpStatusEnum = z.enum(["attending", "declined", "tentative"]);
 
 export const singleEventRsvpSchema = z.object({
-  eventInvitationId: z.string().uuid("Valid invitation ID required."),
+  eventInvitationId: z.string().min(1, "Valid invitation ID required."),
   status: rsvpStatusEnum,
   adultCount: z.coerce.number().int().min(0, "Adult count must be 0 or more.").default(1),
   childCount: z.coerce.number().int().min(0, "Child count must be 0 or more.").default(0),
