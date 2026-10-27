@@ -5,6 +5,8 @@ import { MessageSquare, Copy, Check, ExternalLink, CalendarHeart } from "lucide-
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { generateWhatsAppInvitation, generateWhatsAppRsvpReminder } from "@/lib/whatsapp";
+import { SupportedLanguage } from "@/lib/i18n";
+import { LanguageSelector } from "@/components/ui/language-selector";
 import { Guest, WeddingFunction } from "@/types/models";
 
 interface InviteShareModalProps {
@@ -28,6 +30,7 @@ export function InviteShareModal({
 }: InviteShareModalProps) {
   const [copied, setCopied] = React.useState(false);
   const [isReminderMode, setIsReminderMode] = React.useState(false);
+  const [selectedLang, setSelectedLang] = React.useState<SupportedLanguage>("en");
 
   if (!guest) return null;
 
@@ -54,6 +57,7 @@ export function InviteShareModal({
         rsvpUrl,
         startDate,
         city,
+        language: selectedLang,
       });
 
   const handleCopy = () => {
@@ -70,7 +74,7 @@ export function InviteShareModal({
       description="Zero-cost WhatsApp message generator with personalized invitation link."
     >
       <div className="space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+        <div className="flex flex-wrap items-center justify-between border-b border-slate-100 pb-2 gap-2">
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsReminderMode(false)}
@@ -94,9 +98,10 @@ export function InviteShareModal({
             </button>
           </div>
 
-          <span className="text-[11px] text-slate-500 font-mono">
-            {ceremonyNames.length} Functions
-          </span>
+          <LanguageSelector
+            currentLang={selectedLang}
+            onLanguageChange={(newLang) => setSelectedLang(newLang)}
+          />
         </div>
 
         <div className="relative rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-800 font-sans whitespace-pre-line leading-relaxed max-h-56 overflow-y-auto">

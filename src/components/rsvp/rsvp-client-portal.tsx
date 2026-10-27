@@ -22,6 +22,8 @@ import { Badge } from "@/components/ui/badge";
 import { DigitalPassCard } from "@/components/rsvp/digital-pass-card";
 import { PublicInvitationData, submitRsvpAction } from "@/lib/actions/rsvp";
 import { formatDate, formatTime } from "@/lib/utils";
+import { TRANSLATIONS, SupportedLanguage } from "@/lib/i18n";
+import { LanguageSelector } from "@/components/ui/language-selector";
 
 interface RsvpClientPortalProps {
   token: string;
@@ -30,6 +32,8 @@ interface RsvpClientPortalProps {
 
 export function RsvpClientPortal({ token, initialData }: RsvpClientPortalProps) {
   const { guest, wedding, events } = initialData;
+  const [lang, setLang] = React.useState<SupportedLanguage>("en");
+  const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
 
   // Initialize response state for each function
   const [responses, setResponses] = React.useState<
@@ -124,33 +128,39 @@ export function RsvpClientPortal({ token, initialData }: RsvpClientPortalProps) 
             </div>
             <span className="font-bold text-navy-900 text-sm">Shaadi<span className="text-gold-500">Sync</span> Guest Portal</span>
           </div>
-          <button
-            onClick={() => window.print()}
-            className="flex items-center gap-1.5 text-xs font-semibold text-navy-800 bg-white border border-slate-200 px-3 py-1.5 rounded-lg shadow-xs hover:bg-slate-50 transition-colors"
-          >
-            <Printer className="h-3.5 w-3.5 text-gold-600" />
-            Print Invitation Card
-          </button>
+          <div className="flex items-center gap-2">
+            <LanguageSelector
+              currentLang={lang}
+              onLanguageChange={(newLang) => setLang(newLang)}
+            />
+            <button
+              onClick={() => window.print()}
+              className="hidden sm:flex items-center gap-1.5 text-xs font-semibold text-navy-800 bg-white border border-slate-200 px-3 py-1.5 rounded-lg shadow-xs hover:bg-slate-50 transition-colors"
+            >
+              <Printer className="h-3.5 w-3.5 text-gold-600" />
+              Print Invitation
+            </button>
+          </div>
         </div>
 
         {/* Celebratory Wedding Header Card */}
         <Card className="border-2 border-gold-300 shadow-elevated bg-white overflow-hidden text-center p-8 sm:p-10 relative">
           <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-gold-400 via-gold-500 to-navy-700" />
-          <Badge variant="gold" className="mb-4">Wedding Festivities</Badge>
+          <Badge variant="gold" className="mb-4">{t.weddingInvitation}</Badge>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-navy-900 tracking-tight">
             {wedding.coupleBrideName} & {wedding.coupleGroomName}
           </h1>
           <p className="mt-2 text-sm sm:text-base font-medium text-slate-600">
-            {wedding.primaryCity} • Commencing {formatDate(wedding.startDate)}
+            {wedding.primaryCity} • {formatDate(wedding.startDate)}
           </p>
 
           <div className="mt-6 pt-6 border-t border-slate-100 max-w-lg mx-auto">
-            <p className="text-xs text-slate-500 uppercase tracking-widest font-semibold">Cordially Invited</p>
+            <p className="text-xs text-slate-500 uppercase tracking-widest font-semibold">{t.cordiallyInvited}</p>
             <h2 className="text-xl font-bold text-navy-900 mt-1">
               {guest.firstName} {guest.lastName} {guest.isVip && "• VIP"}
             </h2>
             <p className="text-xs text-slate-500 mt-1">
-              Please let us know which ceremonies you and your family will be attending.
+              {t.rsvpPrompt}
             </p>
           </div>
         </Card>
@@ -162,20 +172,20 @@ export function RsvpClientPortal({ token, initialData }: RsvpClientPortalProps) 
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-600 text-white shadow-xs">
                 <CheckCircle2 className="h-8 w-8" />
               </div>
-              <h3 className="text-2xl font-bold text-emerald-950">Dhanyavaad! RSVP Confirmed</h3>
+              <h3 className="text-2xl font-bold text-emerald-950">{t.rsvpConfirmed}</h3>
               <p className="text-sm text-emerald-800 max-w-md mx-auto leading-relaxed">
-                Your attendance has been confirmed. Below are your official digital QR entry passes for the events you are attending. Present these passes at the entrance gate for express admission.
+                {t.rsvpConfirmedSub}
               </p>
               <div className="pt-2">
                 <Button onClick={() => setSubmitted(false)} variant="secondary" size="sm">
-                  Edit RSVP Responses
+                  {t.editResponse}
                 </Button>
               </div>
             </div>
 
             {/* Render Digital Passes for Attending Events */}
             <div className="space-y-4">
-              <h3 className="text-lg font-bold text-navy-900 text-center">Your Event Admission Passes</h3>
+              <h3 className="text-lg font-bold text-navy-900 text-center">{t.yourPasses}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {events
                   .filter((e) => (responses[e.invitationId]?.status || e.status) === "attending")
@@ -242,7 +252,7 @@ export function RsvpClientPortal({ token, initialData }: RsvpClientPortalProps) 
                             }`}
                           >
                             <Check className="h-3.5 w-3.5" />
-                            Attending
+                            {t.attending}
                           </button>
                           <button
                             type="button"
@@ -254,7 +264,7 @@ export function RsvpClientPortal({ token, initialData }: RsvpClientPortalProps) 
                             }`}
                           >
                             <X className="h-3.5 w-3.5" />
-                            Decline
+                            {t.declined}
                           </button>
                           <button
                             type="button"
@@ -266,7 +276,7 @@ export function RsvpClientPortal({ token, initialData }: RsvpClientPortalProps) 
                             }`}
                           >
                             <HelpCircle className="h-3.5 w-3.5" />
-                            Tentative
+                            {t.tentative}
                           </button>
                         </div>
                       </div>
@@ -291,7 +301,7 @@ export function RsvpClientPortal({ token, initialData }: RsvpClientPortalProps) 
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                           <div>
                             <label className="text-xs font-semibold uppercase tracking-wider text-navy-700 block mb-1">
-                              Adult Attendees
+                              {t.adults}
                             </label>
                             <input
                               type="number"
@@ -305,7 +315,7 @@ export function RsvpClientPortal({ token, initialData }: RsvpClientPortalProps) 
 
                           <div>
                             <label className="text-xs font-semibold uppercase tracking-wider text-navy-700 block mb-1">
-                              Children Attendees
+                              {t.children}
                             </label>
                             <input
                               type="number"
@@ -319,17 +329,17 @@ export function RsvpClientPortal({ token, initialData }: RsvpClientPortalProps) 
 
                           <div>
                             <label className="text-xs font-semibold uppercase tracking-wider text-navy-700 block mb-1">
-                              Dietary Preference
+                              {t.dietaryPreference}
                             </label>
                             <select
                               value={current.dietaryPref}
                               onChange={(e) => handleFieldChange(evt.invitationId, "dietaryPref", e.target.value)}
                               className="h-10 w-full rounded-lg border border-slate-300 px-3 text-sm bg-white"
                             >
-                              <option value="veg">Vegetarian</option>
-                              <option value="jain">Jain (No Root Veg)</option>
-                              <option value="non_veg">Non-Vegetarian</option>
-                              <option value="vegan">Vegan</option>
+                              <option value="veg">{t.vegetarian}</option>
+                              <option value="jain">{t.jain}</option>
+                              <option value="non_veg">{t.nonVegetarian}</option>
+                              <option value="vegan">{t.vegan}</option>
                             </select>
                           </div>
                         </div>
@@ -337,7 +347,7 @@ export function RsvpClientPortal({ token, initialData }: RsvpClientPortalProps) 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
                             <label className="text-xs font-semibold uppercase tracking-wider text-navy-700 block mb-1">
-                              Accompanying Family Names
+                              {t.accompanyingNames}
                             </label>
                             <input
                               type="text"
@@ -349,7 +359,7 @@ export function RsvpClientPortal({ token, initialData }: RsvpClientPortalProps) 
                           </div>
                           <div>
                             <label className="text-xs font-semibold uppercase tracking-wider text-navy-700 block mb-1">
-                              Food Allergies / Notes
+                              {t.allergiesNotes}
                             </label>
                             <input
                               type="text"
@@ -372,12 +382,12 @@ export function RsvpClientPortal({ token, initialData }: RsvpClientPortalProps) 
                 {loading ? (
                   <>
                     <Loader2 className="h-5 w-5 animate-spin" />
-                    Submitting RSVP...
+                    {t.submittingRsvp}
                   </>
                 ) : (
                   <>
                     <Sparkles className="h-5 w-5 text-gold-400" />
-                    Submit Final RSVP Responses
+                    {t.submitRsvp}
                   </>
                 )}
               </Button>

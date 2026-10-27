@@ -141,3 +141,4 @@ export function CameraQrScanner({ onScan, isActive }: CameraQrScannerProps) {
     </div>
   );
 }
+
