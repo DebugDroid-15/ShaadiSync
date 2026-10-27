@@ -116,6 +116,29 @@ body {
   background-position: 0 0, 16px 16px;
 }
 
-.bg-mandala-gold {
-  background-image: radial-gradient(circle at center, rgba(198, 161, 91, 0.15) 0%, transparent 70%);
+/* Accessibility: Reduced motion query respect */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Luxurious Indian Wedding Gradient Borders & Frames */
+.border-gold-embossed {
+  border-image: linear-gradient(135deg, #E0C48A 0%, #C6A15B 50%, #8B1E3F 100%) 1;
+}
+
+.bg-palace-radial {
+  background: radial-gradient(circle at 50% 20%, rgba(198, 161, 91, 0.18) 0%, rgba(23, 43, 77, 0.03) 60%, transparent 100%);
+}
+
+.text-gold-shimmer {
+  background: linear-gradient(135deg, #FFFFFF 0%, #F5DEB3 30%, #C6A15B 70%, #E6C280 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
