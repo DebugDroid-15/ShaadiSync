@@ -63,6 +63,12 @@ import {
   AnimatedShaadiMusicBanner,
 } from "@/components/ui/shaadi-motion-graphics";
 import { SacredHavanPherasSplashScreen } from "@/components/ui/sacred-havan-splash-screen";
+import { InteractiveFoodCalculationSection } from "@/components/ui/interactive-food-calculation";
+import { InteractiveCrowdCalculationSection } from "@/components/ui/interactive-crowd-calculation";
+import {
+  AnimatedBanquetDegchi,
+  AnimatedGateScannerGraphic,
+} from "@/components/ui/shaadi-calculation-graphics";
 
 export default function LandingPage() {
   return (
@@ -522,6 +528,86 @@ export default function LandingPage() {
               </div>
             </RoyalPalaceArchFrame>
           </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          SECTION E1: DEEP DIVE: BANQUET FOOD & PLATE OPTIMIZATION CALCULATION
+          ========================================================================= */}
+      <section id="food-calculation" className="py-20 bg-gradient-to-b from-white via-amber-50/20 to-ivory-100 border-b border-gold-200/60 relative overflow-hidden">
+        <PalaceCornerJali position="top-left" />
+        <PalaceCornerJali position="bottom-right" />
+        <div className="absolute inset-0 bg-jali-pattern opacity-15 pointer-events-none" />
+
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-20">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-12">
+            <div className="max-w-2xl">
+              <Badge variant="gold" className="mb-3 uppercase tracking-wider text-[10px]">
+                Banquet Engineering & Plate Optimization
+              </Badge>
+              <h2 className="text-3xl sm:text-5xl font-extrabold font-serif text-navy-950 tracking-tight leading-tight">
+                Precision Food Calculation: <br />
+                <span className="bg-gradient-to-r from-amber-600 via-gold-600 to-burgundy-700 bg-clip-text text-transparent">
+                  Zero Starved Guests. Zero Food in the Bin.
+                </span>
+              </h2>
+              <p className="mt-4 text-slate-600 text-base leading-relaxed">
+                Indian weddings are legendary for extraordinary feasts—and infamous for lakhs of rupees thrown away on surplus plates.
+                ShaadiSync brings algorithmic precision to Halwai and Banquet operations, automatically calculating confirmed attendee counts, safe buffer margins, and separate Jain/Veg/Non-Veg kitchen slips.
+              </p>
+            </div>
+
+            {/* Dynamic Animated Copper Degchi Visual */}
+            <div className="shrink-0 flex flex-col items-center">
+              <AnimatedBanquetDegchi />
+              <span className="text-xs font-serif text-gold-800 font-semibold mt-1">
+                Aromatic Royal Handi • Live Kitchen Sync
+              </span>
+            </div>
+          </div>
+
+          {/* Interactive Calculator Component */}
+          <InteractiveFoodCalculationSection />
+        </div>
+      </section>
+
+      {/* =========================================================================
+          SECTION E2: DEEP DIVE: BARAAT SURGE & CROWD FLOW CALCULATION
+          ========================================================================= */}
+      <section id="crowd-calculation" className="py-20 bg-navy-900 border-b border-navy-800 relative overflow-hidden text-white">
+        <PalaceCornerJali position="top-right" />
+        <PalaceCornerJali position="bottom-left" />
+        <div className="absolute inset-0 bg-jali-pattern opacity-10 pointer-events-none" />
+
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-20">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-12">
+            <div className="max-w-2xl">
+              <Badge variant="gold" className="mb-3 uppercase tracking-wider text-[10px]">
+                High-Volume Gate Ingress & Crowd Velocity
+              </Badge>
+              <h2 className="text-3xl sm:text-5xl font-extrabold font-serif text-white tracking-tight leading-tight">
+                Crowd Surge Calculations: <br />
+                <span className="bg-gradient-to-r from-gold-300 via-amber-300 to-emerald-400 bg-clip-text text-transparent">
+                  1-Second Verification, Zero Baraat Bottlenecks
+                </span>
+              </h2>
+              <p className="mt-4 text-slate-300 text-base leading-relaxed">
+                When 600 guests descend upon palace gates simultaneously as Dhol beats crescendo, paper spreadsheets collapse.
+                ShaadiSync turns any volunteer’s mobile phone into a sub-second scanner desk with offline cryptographic security and instant anti-gatecrashing checks.
+              </p>
+            </div>
+
+            {/* Dynamic Animated Gate Scanner Graphic */}
+            <div className="shrink-0 flex flex-col items-center">
+              <AnimatedGateScannerGraphic />
+              <span className="text-xs font-serif text-gold-300 font-semibold mt-1">
+                Sub-Second Gate Scanner Desk
+              </span>
+            </div>
+          </div>
+
+          {/* Interactive Crowd Flow Simulation Component */}
+          <InteractiveCrowdCalculationSection />
         </div>
       </section>
 
