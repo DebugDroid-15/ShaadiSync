@@ -62,10 +62,14 @@ import {
   ShaadiCelebrationLauncher,
   AnimatedShaadiMusicBanner,
 } from "@/components/ui/shaadi-motion-graphics";
+import { SacredHavanPherasSplashScreen } from "@/components/ui/sacred-havan-splash-screen";
 
 export default function LandingPage() {
   return (
     <div className="flex flex-col relative bg-ivory-100 min-h-screen text-navy-900 font-sans selection:bg-gold-500/20 selection:text-navy-900 overflow-x-hidden">
+      {/* Sacred Traditional Havan Kund & Circumambulating Pheras Splash Screen */}
+      <SacredHavanPherasSplashScreen />
+
       {/* 1. Scroll-driven festive progress indicator */}
       <ScrollFestiveIndicator />
 

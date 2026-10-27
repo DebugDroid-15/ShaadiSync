@@ -273,41 +273,85 @@ export function AnimatedFlickerDiya({ size = "md" }: { size?: "sm" | "md" | "lg"
 }
 
 /**
- * Animated Celebration Confetti / Marigold Burst Trigger
- * Can be clicked or triggered to celebrate any milestone on the landing page!
+ * Animated Celebration Confetti / Multi-Wave Genda Phool Rain Launcher
+ * Triggers an immense, multi-wave shower of marigold petals, rose petals, and golden stars!
  */
 export function ShaadiCelebrationLauncher() {
+  const [isRaining, setIsRaining] = React.useState(false);
+
   const launchBurst = async () => {
     try {
+      setIsRaining(true);
       const confetti = (await import("canvas-confetti")).default;
-      // Traditional Indian Wedding Palette: Royal Burgundy, Saffron Gold, Amber, Emerald Green
-      const colors = ["#8B1E3F", "#C6A15B", "#F59E0B", "#10B981", "#E11D48"];
 
+      // Authentic Indian Wedding Palette:
+      // Saffron Orange, Marigold Amber, Royal Crimson, Festive Gold, Emerald Green
+      const colors = ["#F59E0B", "#D97706", "#E11D48", "#8B1E3F", "#C6A15B", "#10B981", "#FDE047"];
+
+      // Wave 1: Center fountain burst
       confetti({
-        particleCount: 80,
-        spread: 70,
-        origin: { y: 0.7 },
+        particleCount: 120,
+        spread: 90,
+        origin: { y: 0.65 },
         colors,
+        ticks: 250,
+        gravity: 0.8,
+        scalar: 1.2,
       });
 
+      // Wave 2: Left side celebratory cannon (at 150ms)
       setTimeout(() => {
         confetti({
-          particleCount: 50,
+          particleCount: 80,
           angle: 60,
-          spread: 55,
-          origin: { x: 0 },
+          spread: 70,
+          origin: { x: 0, y: 0.7 },
           colors,
+          ticks: 280,
+          gravity: 0.75,
+          scalar: 1.3,
         });
+      }, 150);
+
+      // Wave 3: Right side celebratory cannon (at 300ms)
+      setTimeout(() => {
         confetti({
-          particleCount: 50,
+          particleCount: 80,
           angle: 120,
-          spread: 55,
-          origin: { x: 1 },
+          spread: 70,
+          origin: { x: 1, y: 0.7 },
           colors,
+          ticks: 280,
+          gravity: 0.75,
+          scalar: 1.3,
         });
-      }, 250);
+      }, 300);
+
+      // Wave 4: Continuous overhead Petal Shower (downpour for 2 seconds)
+      const end = Date.now() + 1800;
+      const frame = () => {
+        confetti({
+          particleCount: 4,
+          angle: 90,
+          spread: 120,
+          origin: { x: Math.random(), y: -0.1 },
+          colors,
+          ticks: 220,
+          gravity: 0.6,
+          scalar: 1.4,
+          drift: (Math.random() - 0.5) * 1.5,
+        });
+
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        } else {
+          setIsRaining(false);
+        }
+      };
+      requestAnimationFrame(frame);
     } catch (e) {
       console.warn("Celebration confetti launch ignored", e);
+      setIsRaining(false);
     }
   };
 
@@ -315,12 +359,16 @@ export function ShaadiCelebrationLauncher() {
     <button
       onClick={launchBurst}
       type="button"
-      className="group relative inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-amber-500 via-burgundy-600 to-amber-600 text-white font-serif font-bold text-sm shadow-royal hover:shadow-goldGlow hover:scale-105 active:scale-95 transition-all duration-300 border-2 border-gold-300"
+      className="group relative inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-gradient-to-r from-amber-500 via-burgundy-600 to-amber-600 text-white font-serif font-bold text-sm shadow-royal hover:shadow-goldGlow hover:scale-105 active:scale-95 transition-all duration-300 border-2 border-gold-300 ring-2 ring-gold-400/30"
       title="Click to shower auspicious wedding blessings!"
     >
-      <span className="text-lg group-hover:rotate-12 transition-transform duration-300">🎉</span>
-      <span className="tracking-wide">Shower Wedding Blessings (Genda Phool)</span>
-      <span className="text-lg animate-bounce">🏵️</span>
+      <span className={`text-xl transition-transform duration-300 ${isRaining ? "animate-spin" : "group-hover:rotate-12"}`}>
+        🎉
+      </span>
+      <span className="tracking-wide">
+        {isRaining ? "Blessings Showering! 🌸✨" : "Shower Wedding Blessings (Genda Phool)"}
+      </span>
+      <span className="text-xl animate-bounce">🏵️</span>
     </button>
   );
 }
