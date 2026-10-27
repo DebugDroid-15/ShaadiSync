@@ -17,8 +17,8 @@ export const dietaryPrefSchema = z.enum(["veg", "jain", "non_veg", "vegan"]);
 
 // Function / Event creation & update schema
 export const eventSchema = z.object({
-  weddingId: z.string().uuid("Valid wedding ID is required."),
-  venueId: z.string().uuid().optional().nullable(),
+  weddingId: z.string().min(1, "Valid wedding ID is required."),
+  venueId: z.string().optional().nullable(),
   name: z.string().min(2, "Function name must be at least 2 characters."),
   eventType: eventTypeSchema,
   startTime: z.string().datetime("Valid ISO start datetime is required."),
@@ -33,7 +33,7 @@ export const eventSchema = z.object({
 
 // Household schema
 export const householdSchema = z.object({
-  weddingId: z.string().uuid("Valid wedding ID is required."),
+  weddingId: z.string().min(1, "Valid wedding ID is required."),
   familyName: z.string().min(2, "Family name must be at least 2 characters."),
   primaryContactName: z.string().min(2, "Primary contact name is required."),
   phone: z.string().optional().nullable(),
@@ -44,8 +44,8 @@ export const householdSchema = z.object({
 
 // Guest schema
 export const guestSchema = z.object({
-  weddingId: z.string().uuid("Valid wedding ID is required."),
-  householdId: z.string().uuid().optional().nullable(),
+  weddingId: z.string().min(1, "Valid wedding ID is required."),
+  householdId: z.string().optional().nullable(),
   firstName: z.string().min(1, "First name is required."),
   lastName: z.string().min(1, "Last name is required."),
   side: guestSideSchema.default("mutual"),
