@@ -42,7 +42,7 @@ describe("Phase 10: Production Readiness, Security & Deployment Verification", (
     });
   });
 
-  it("validates that all 7 production migrations maintain correct schema dependencies", () => {
+  it("validates that all production migrations maintain correct schema dependencies", () => {
     const expectedMigrations = [
       "20261026000001_initial_schema.sql",
       "20261026000002_functions_households_guests.sql",
@@ -51,9 +51,10 @@ describe("Phase 10: Production Readiness, Security & Deployment Verification", (
       "20261026000005_budget_expenses_payments.sql",
       "20261026000006_parking_transport_accommodation.sql",
       "20261026000007_qr_passes_and_checkin.sql",
+      "20261026000008_fix_events_rls_recursion.sql",
     ];
 
-    expect(expectedMigrations.length).toBe(7);
+    expect(expectedMigrations.length).toBe(8);
     // Chronological timestamp ordering
     for (let i = 0; i < expectedMigrations.length - 1; i++) {
       expect(expectedMigrations[i] < expectedMigrations[i + 1]).toBe(true);

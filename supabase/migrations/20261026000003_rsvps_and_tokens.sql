@@ -53,6 +53,21 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER STABLE;
 
+-- 3b. Security Definer helper: verify guest event access without RLS recursion
+CREATE OR REPLACE FUNCTION public.can_guest_access_event(target_event_id UUID)
+RETURNS BOOLEAN AS $$
+BEGIN
+    RETURN EXISTS (
+        SELECT 1
+        FROM public.event_invitations ei
+        JOIN public.guests g ON g.id = ei.guest_id
+        WHERE ei.event_id = target_event_id
+          AND g.token_revoked IS FALSE
+          AND (g.token_expires_at IS NULL OR g.token_expires_at > NOW())
+    );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER STABLE;
+
 -- 4. Row Level Security on RSVPs
 ALTER TABLE public.rsvps ENABLE ROW LEVEL SECURITY;
 
@@ -83,17 +98,14 @@ CREATE POLICY "rsvps_organizer_all"
 CREATE POLICY "event_invitations_token_read"
     ON public.event_invitations FOR SELECT
     USING (
-        guest_id IN (
-            SELECT id FROM public.guests
-            WHERE token_revoked IS FALSE
-              AND (token_expires_at IS NULL OR token_expires_at > NOW())
+        EXISTS (
+            SELECT 1 FROM public.guests g
+            WHERE g.id = event_invitations.guest_id
+              AND g.token_revoked IS FALSE
+              AND (g.token_expires_at IS NULL OR g.token_expires_at > NOW())
         )
     );
 
 CREATE POLICY "events_token_read"
     ON public.events FOR SELECT
-    USING (
-        id IN (
-            SELECT event_id FROM public.event_invitations
-        )
-    );
+    USING (public.can_guest_access_event(id));
