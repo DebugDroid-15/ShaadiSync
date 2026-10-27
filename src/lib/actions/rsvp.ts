@@ -112,8 +112,11 @@ export async function getInvitationByTokenAction(token: string): Promise<PublicI
     .single();
 
   if (guestError || !guestData) {
-    // If not found in database, check mock guests for demo/preview tokens
-    const mockGuest = MOCK_GUESTS.find((g) => g.invitationToken === token);
+    // If not found in database, check mock guests for demo/preview tokens (or match any tok_aarav_diya / demo token)
+    const mockGuest =
+      MOCK_GUESTS.find((g) => g.invitationToken === token) ||
+      (token.startsWith("tok_aarav_diya") || token.startsWith("tok_demo") ? MOCK_GUESTS[0] : null);
+
     if (mockGuest) {
       const mockWedding = MOCK_WEDDINGS[0];
       const invitedEvents = MOCK_FUNCTIONS.filter((f) => mockGuest.invitedFunctionIds.includes(f.id));
@@ -147,6 +150,7 @@ export async function getInvitationByTokenAction(token: string): Promise<PublicI
           venueAddress: e.venueAddress,
           dressCode: e.dressCode,
           status: "invited",
+          passCode: e.id === "fn-02-sangeet" ? "pass_sng_7f8a92b" : `pass_${e.id.substring(3, 6)}_${mockGuest.id.substring(4)}`,
         })),
       };
     }
