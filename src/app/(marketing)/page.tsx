@@ -44,13 +44,22 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { WeddingToranHeader, IndianOrnamentalCorner, FloatingShaadiMotifs } from "@/components/ui/shaadi-decorations";
 
 export default function LandingPage() {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col relative bg-ivory-100">
+      {/* Auspicious Floating Motifs across Entire Scroll */}
+      <FloatingShaadiMotifs />
+
+      {/* Traditional Marigold Toran Garland at Top of Page */}
+      <WeddingToranHeader />
+
       {/* 1. Hero Section */}
       <section className="relative overflow-hidden pt-12 pb-20 md:pt-20 md:pb-32 border-b border-navy-100 bg-gradient-to-b from-white via-ivory-100 to-ivory-200">
-        <div className="absolute inset-0 bg-[radial-gradient(#c6a15b_1px,transparent_1px)] [background-size:24px_24px] opacity-15" />
+        <IndianOrnamentalCorner position="top-left" />
+        <IndianOrnamentalCorner position="top-right" />
+        <div className="absolute inset-0 bg-jali-pattern opacity-30 pointer-events-none" />
         
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-flex items-center gap-2 rounded-full border border-gold-300 bg-gold-50/90 px-4 py-1.5 text-xs font-semibold text-gold-900 shadow-xs mb-6">
@@ -120,7 +129,9 @@ export default function LandingPage() {
 
       {/* 2. Live Interactive UI Simulation Preview */}
       <section className="py-16 bg-navy-900 text-white relative overflow-hidden border-b border-navy-800">
-        <div className="absolute inset-0 bg-[radial-gradient(#c6a15b_1px,transparent_1px)] [background-size:32px_32px] opacity-10" />
+        <IndianOrnamentalCorner position="top-right" />
+        <IndianOrnamentalCorner position="bottom-left" />
+        <div className="absolute inset-0 bg-jali-pattern opacity-10 pointer-events-none" />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12">
             <Badge variant="gold" className="mb-3">Real-Time Control Room</Badge>
@@ -309,7 +320,10 @@ export default function LandingPage() {
       </section>
 
       {/* 4. Complete Feature Suite (The 8 Pillars) */}
-      <section id="features" className="py-20 bg-ivory-100 border-b border-slate-200">
+      <section id="features" className="py-20 bg-ivory-100 border-b border-slate-200 relative overflow-hidden">
+        <IndianOrnamentalCorner position="top-left" />
+        <IndianOrnamentalCorner position="bottom-right" />
+        <div className="absolute inset-0 bg-jali-pattern opacity-25 pointer-events-none" />
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <Badge variant="gold" className="mb-3">Complete Platform Architecture</Badge>
@@ -897,6 +911,9 @@ export default function LandingPage() {
 
       {/* 11. Final Call to Action */}
       <section className="py-20 bg-gradient-to-b from-white via-ivory-100 to-ivory-200 border-b border-navy-100 text-center relative overflow-hidden">
+        <IndianOrnamentalCorner position="top-left" />
+        <IndianOrnamentalCorner position="top-right" />
+        <div className="absolute inset-0 bg-jali-pattern opacity-30 pointer-events-none" />
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <div className="inline-flex items-center gap-2 rounded-full border border-gold-300 bg-gold-100 px-4 py-1.5 text-xs font-semibold text-gold-900 shadow-xs mb-6">
             <Sparkles className="h-4 w-4 text-gold-600" />

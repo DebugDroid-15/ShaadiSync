@@ -48,3 +48,74 @@ body {
 .subtle-border {
   border-color: rgba(23, 43, 77, 0.08);
 }
+
+/* Regal Indian Wedding Floating Animations */
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-14px) rotate(6deg);
+  }
+}
+
+@keyframes float-reverse {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(12px) rotate(-8deg);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.6;
+    filter: drop-shadow(0 0 12px rgba(198, 161, 91, 0.4));
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 24px rgba(198, 161, 91, 0.8));
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-float-slow {
+  animation: float-slow 7s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+  animation: float-reverse 8.5s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3.5s ease-in-out infinite;
+}
+
+.shimmer-gold {
+  background: linear-gradient(90deg, #172B4D 0%, #C6A15B 50%, #172B4D 100%);
+  background-size: 200% auto;
+  animation: shimmer 4s linear infinite;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Traditional Paisley & Mandala Jali Pattern Background */
+.bg-jali-pattern {
+  background-image: radial-gradient(rgba(198, 161, 91, 0.22) 1.5px, transparent 1.5px),
+                    radial-gradient(rgba(139, 30, 63, 0.12) 1.5px, transparent 1.5px);
+  background-size: 32px 32px;
+  background-position: 0 0, 16px 16px;
+}
+
+.bg-mandala-gold {
+  background-image: radial-gradient(circle at center, rgba(198, 161, 91, 0.15) 0%, transparent 70%);
+}
