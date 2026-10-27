@@ -6,6 +6,8 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 import { submitRsvpFormSchema, type SubmitRsvpForm } from "@/lib/validations/rsvp";
+import { checkRateLimit } from "@/lib/security/rate-limiter";
+import { sanitizeText } from "@/lib/security/sanitizer";
 import { MOCK_GUESTS, MOCK_FUNCTIONS, MOCK_WEDDINGS } from "@/lib/mock-data";
 
 export interface PublicInvitationData {
@@ -55,6 +57,12 @@ export interface PublicInvitationData {
 export async function getInvitationByTokenAction(token: string): Promise<PublicInvitationData> {
   if (!token || token.trim().length < 5) {
     return { isValid: false, error: "Invalid invitation token." };
+  }
+
+  // Rate limit public token requests (max 60 per minute per token to prevent token enumeration/scraping)
+  const rateLimit = checkRateLimit(`token_view:${token}`, { maxRequests: 60, windowMs: 60000 });
+  if (!rateLimit.isAllowed) {
+    return { isValid: false, error: "Too many verification requests. Please wait a minute before trying again." };
   }
 
   if (!isSupabaseConfigured()) {
@@ -221,6 +229,25 @@ export async function getInvitationByTokenAction(token: string): Promise<PublicI
  * Submit or update RSVP responses idempotently with accompanying headcount and dietary notes.
  */
 export async function submitRsvpAction(payload: SubmitRsvpForm): Promise<{ success: boolean; error?: string }> {
+  // Rate limit public RSVP submissions (max 10 submissions per minute per token)
+  if (payload?.token) {
+    const rateLimit = checkRateLimit(`rsvp_submit:${payload.token}`, { maxRequests: 10, windowMs: 60000 });
+    if (!rateLimit.isAllowed) {
+      return { success: false, error: "Too many submission attempts. Please wait a moment before updating." };
+    }
+  }
+
+  // Sanitize notes input to eliminate XSS/HTML injections
+  if (payload?.generalNotes) {
+    payload.generalNotes = sanitizeText(payload.generalNotes);
+  }
+  if (payload?.responses) {
+    payload.responses.forEach((r) => {
+      if (r.dietaryNotes) r.dietaryNotes = sanitizeText(r.dietaryNotes);
+      if (r.accompanyingNames) r.accompanyingNames = sanitizeText(r.accompanyingNames);
+    });
+  }
+
   const validation = submitRsvpFormSchema.safeParse(payload);
   if (!validation.success) {
     return { success: false, error: validation.error.errors[0].message };

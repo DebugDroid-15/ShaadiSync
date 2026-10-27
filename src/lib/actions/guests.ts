@@ -5,6 +5,7 @@ import crypto from "crypto";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 import { guestSchema, householdSchema, type CsvGuestRow } from "@/lib/validations/events-guests";
+import { sanitizeText, sanitizePhoneNumber } from "@/lib/security/sanitizer";
 import { MOCK_GUESTS } from "@/lib/mock-data";
 
 export type GuestActionResult<T = unknown> = {
@@ -44,15 +45,15 @@ export async function createGuestAction(formData: FormData): Promise<GuestAction
   const raw = {
     weddingId: formData.get("weddingId") as string,
     householdId: (formData.get("householdId") as string) || null,
-    firstName: formData.get("firstName") as string,
-    lastName: formData.get("lastName") as string,
+    firstName: sanitizeText(formData.get("firstName") as string),
+    lastName: sanitizeText(formData.get("lastName") as string),
     side: (formData.get("side") as string) || "mutual",
     category: (formData.get("category") as string) || "family",
     ageGroup: (formData.get("ageGroup") as string) || "adult",
-    phone: (formData.get("phone") as string) || null,
-    email: (formData.get("email") as string) || null,
+    phone: sanitizePhoneNumber((formData.get("phone") as string) || null),
+    email: (formData.get("email") as string)?.trim().toLowerCase() || null,
     dietaryPref: (formData.get("dietaryPref") as string) || "veg",
-    allergiesNotes: (formData.get("allergiesNotes") as string) || null,
+    allergiesNotes: sanitizeText((formData.get("allergiesNotes") as string) || null),
     isVip: formData.get("isVip") === "true" || formData.get("isVip") === "on",
     invitedEventIds: invitedEventIdsRaw.filter((id) => id.length > 0),
   };

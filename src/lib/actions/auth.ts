@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
+import { checkRateLimit } from "@/lib/security/rate-limiter";
+import { sanitizeText } from "@/lib/security/sanitizer";
 
 const signInSchema = z.object({
   email: z.string().email("Please provide a valid email address."),
@@ -27,8 +29,16 @@ export type AuthActionResult = {
  * Server Action for User Sign In
  */
 export async function signInAction(formData: FormData): Promise<AuthActionResult> {
-  const email = formData.get("email") as string;
+  const email = (formData.get("email") as string)?.trim().toLowerCase();
   const password = formData.get("password") as string;
+
+  // Brute-force protection: max 5 login attempts per 2 minutes per email address
+  if (email) {
+    const rateLimit = checkRateLimit(`login_attempt:${email}`, { maxRequests: 5, windowMs: 120000 });
+    if (!rateLimit.isAllowed) {
+      return { success: false, error: "Too many failed login attempts. Please wait 2 minutes before retrying." };
+    }
+  }
 
   const validation = signInSchema.safeParse({ email, password });
   if (!validation.success) {
@@ -62,10 +72,18 @@ export async function signInAction(formData: FormData): Promise<AuthActionResult
  * Server Action for Organisation & User Registration
  */
 export async function signUpAction(formData: FormData): Promise<AuthActionResult> {
-  const fullName = formData.get("fullName") as string;
-  const organisationName = formData.get("organisationName") as string;
-  const email = formData.get("email") as string;
+  const fullName = sanitizeText(formData.get("fullName") as string);
+  const organisationName = sanitizeText(formData.get("organisationName") as string);
+  const email = (formData.get("email") as string)?.trim().toLowerCase();
   const password = formData.get("password") as string;
+
+  // Rate limit registration requests to prevent bot account creation (max 5 per 10 minutes)
+  if (email) {
+    const rateLimit = checkRateLimit(`register_attempt:${email}`, { maxRequests: 5, windowMs: 600000 });
+    if (!rateLimit.isAllowed) {
+      return { success: false, error: "Registration rate limit reached. Please wait a few minutes before trying again." };
+    }
+  }
 
   const validation = signUpSchema.safeParse({ fullName, organisationName, email, password });
   if (!validation.success) {

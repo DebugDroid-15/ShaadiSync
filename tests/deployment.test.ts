@@ -16,7 +16,9 @@ describe("Phase 10: Production Readiness, Security & Deployment Verification", (
     expect(res.headers.get("X-Frame-Options")).toBe("DENY");
     expect(res.headers.get("X-XSS-Protection")).toBe("1; mode=block");
     expect(res.headers.get("Referrer-Policy")).toBe("strict-origin-when-cross-origin");
-    expect(res.headers.get("Permissions-Policy")).toBe("camera=(self), microphone=(), geolocation=()");
+    expect(res.headers.get("Permissions-Policy")).toContain("camera=(self)");
+    expect(res.headers.get("Permissions-Policy")).toContain("microphone=()");
+    expect(res.headers.get("Permissions-Policy")).toContain("geolocation=()");
 
     // Verify Content Security Policy
     const csp = res.headers.get("Content-Security-Policy");

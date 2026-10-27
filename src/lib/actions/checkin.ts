@@ -10,6 +10,8 @@ import {
   manualCheckinSchema,
   checkinGateSchema,
 } from "@/lib/validations/checkin";
+import { checkRateLimit } from "@/lib/security/rate-limiter";
+import { sanitizeText, sanitizeInteger } from "@/lib/security/sanitizer";
 import {
   MOCK_QR_PASSES,
   MOCK_ATTENDANCE_RECORDS,
@@ -167,13 +169,22 @@ export async function getEventAttendanceDashboardAction(
  * Guaranteed duplicate scan prevention through database uniqueness & row locks
  */
 export async function scanCheckinAction(formData: FormData): Promise<CheckinActionResult> {
+  const passCode = formData.get("passCode") as string;
+  const gateId = (formData.get("gateId") as string) || "default-gate";
+
+  // Rate limiting to defend against automated brute-force pass scanning (max 120 scans/min per gate)
+  const rateLimit = checkRateLimit(`gate_scan:${gateId}`, { maxRequests: 120, windowMs: 60000 });
+  if (!rateLimit.isAllowed) {
+    return { success: false, error: "Scan rate limit exceeded for this desk. Please pause for 5 seconds." };
+  }
+
   const raw = {
     weddingId: formData.get("weddingId") as string,
     eventId: formData.get("eventId") as string,
-    passCode: formData.get("passCode") as string,
+    passCode: passCode ? passCode.trim() : "",
     gateId: (formData.get("gateId") as string) || null,
-    admittedCount: Number(formData.get("admittedCount") || 1),
-    operatorNotes: (formData.get("operatorNotes") as string) || null,
+    admittedCount: sanitizeInteger(formData.get("admittedCount"), 1, 1, 50),
+    operatorNotes: sanitizeText((formData.get("operatorNotes") as string) || null),
   };
 
   const parseResult = scanCheckinSchema.safeParse(raw);

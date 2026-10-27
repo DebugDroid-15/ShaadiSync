@@ -73,9 +73,11 @@ function applySecurityHeaders(response: NextResponse) {
   response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-XSS-Protection", "1; mode=block");
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set("Cross-Origin-Opener-Policy", "same-origin");
+  response.headers.set("Cross-Origin-Resource-Policy", "same-origin");
   response.headers.set(
     "Permissions-Policy",
-    "camera=(self), microphone=(), geolocation=()"
+    "camera=(self), microphone=(), geolocation=(), browsing-topics=(), payment=()"
   );
   // Content Security Policy (strict script & frame ancestry boundaries)
   response.headers.set(
