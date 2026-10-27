@@ -74,7 +74,7 @@ export default function LoginPage() {
                 name="email"
                 type="email"
                 placeholder="planner@royalheritage.com"
-                defaultValue="amar.khera@shaadisync.com"
+                defaultValue="laxman@shaadisync.com"
                 required
               />
               <Input

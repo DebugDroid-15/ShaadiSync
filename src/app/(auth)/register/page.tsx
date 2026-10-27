@@ -75,8 +75,8 @@ export default function RegisterPage() {
               <Input
                 label="Your Full Name"
                 name="fullName"
-                placeholder="e.g. Amar Khera"
-                defaultValue="Amar Khera"
+                placeholder="e.g. Laxman"
+                defaultValue="Laxman"
                 required
               />
               <Input
@@ -91,7 +91,7 @@ export default function RegisterPage() {
                 name="email"
                 type="email"
                 placeholder="planner@domain.com"
-                defaultValue="amar.khera@shaadisync.com"
+                defaultValue="laxman@shaadisync.com"
                 required
               />
               <Input

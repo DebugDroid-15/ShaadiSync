@@ -140,7 +140,7 @@ export default function LandingPage() {
                 <div className="h-3 w-3 rounded-full bg-rose-500" />
                 <div className="h-3 w-3 rounded-full bg-amber-500" />
                 <div className="h-3 w-3 rounded-full bg-emerald-500" />
-                <span className="ml-3 text-xs font-medium text-slate-400">ShaadiSync Command Center • Royal Palace Udaipur • Amar & Simran</span>
+                <span className="ml-3 text-xs font-medium text-slate-400">ShaadiSync Command Center • Royal Palace Udaipur • Laxman & Simran</span>
               </div>
               <div className="flex items-center gap-2 text-xs text-gold-400 font-semibold bg-gold-950/60 border border-gold-800/60 px-3 py-1 rounded-full">
                 <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping inline-block" />
@@ -491,7 +491,7 @@ export default function LandingPage() {
               
               <div className="text-center pt-4 pb-2 border-b border-slate-100">
                 <Badge variant="gold" className="text-[10px] mb-1">Wedding Invitation</Badge>
-                <h3 className="font-serif text-lg font-bold text-navy-900">Amar & Simran</h3>
+                <h3 className="font-serif text-lg font-bold text-navy-900">Laxman & Simran</h3>
                 <p className="text-[11px] text-slate-500">The Grand Ballroom • Udaipur</p>
               </div>
 

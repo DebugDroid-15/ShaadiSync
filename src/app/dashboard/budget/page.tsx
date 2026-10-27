@@ -626,7 +626,7 @@ export default function BudgetPage() {
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="paidByName">Paid By Person</Label>
-                    <Input id="paidByName" name="paidByName" placeholder="e.g. Amar Khera / Father of Bride" />
+                    <Input id="paidByName" name="paidByName" placeholder="e.g. Laxman / Father of Bride" />
                   </div>
                 </div>
 

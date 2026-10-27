@@ -114,7 +114,7 @@ export default function DashboardLayout({
               AK
             </div>
             <div className="hidden sm:block text-left">
-              <p className="text-xs font-bold text-navy-900 leading-none">Amar Khera</p>
+              <p className="text-xs font-bold text-navy-900 leading-none">Laxman</p>
               <p className="text-[10px] text-slate-500 mt-0.5">Royal Heritage</p>
             </div>
           </div>
