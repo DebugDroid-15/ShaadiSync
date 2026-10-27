@@ -386,7 +386,7 @@ export default function GuestsPage() {
             <Input label="Phone Number" name="phone" placeholder="+91 98765 00000" />
             <Input label="Email Address" name="email" type="email" placeholder="guest@domain.com" />
           </div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="space-y-1">
               <label className="text-xs font-semibold uppercase tracking-wider text-navy-700">Side</label>
               <select name="side" className="w-full h-10 rounded-lg border border-slate-300 px-2 text-xs bg-white">
@@ -402,6 +402,13 @@ export default function GuestsPage() {
                 <option value="close_friend">Close Friend</option>
                 <option value="colleague">Colleague</option>
                 <option value="vip">VIP</option>
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-semibold uppercase tracking-wider text-navy-700">Age Group</label>
+              <select name="ageGroup" className="w-full h-10 rounded-lg border border-slate-300 px-2 text-xs bg-white">
+                <option value="adult">Adult</option>
+                <option value="child">Child</option>
               </select>
             </div>
             <div className="space-y-1">

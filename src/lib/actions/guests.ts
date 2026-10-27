@@ -80,13 +80,25 @@ export async function createGuestAction(formData: FormData): Promise<GuestAction
   const supabase = await createServerSupabaseClient();
   if (!supabase) return { success: false, error: "Database client unavailable." };
 
+  // Resolve target wedding ID (if mock/custom string, map to active wedding in database)
+  let targetWeddingId = valid.weddingId;
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetWeddingId);
+  if (!isUuid) {
+    const { data: wedRow } = await (supabase.from("weddings") as unknown as {
+      select: (col: string) => { limit: (n: number) => Promise<{ data: Array<{ id: string }> | null }> };
+    }).select("id").limit(1);
+    if (wedRow && wedRow.length > 0) {
+      targetWeddingId = wedRow[0].id;
+    }
+  }
+
   // 1. Insert guest
   const { data: guestData, error: guestError } = await (supabase.from("guests") as unknown as {
     insert: (values: unknown[]) => { select: () => { single: () => Promise<{ data: { id: string } | null; error: { message: string } | null }> } };
   })
     .insert([
       {
-        wedding_id: valid.weddingId,
+        wedding_id: targetWeddingId,
         household_id: valid.householdId,
         first_name: valid.firstName,
         last_name: valid.lastName,
@@ -110,15 +122,22 @@ export async function createGuestAction(formData: FormData): Promise<GuestAction
 
   // 2. Insert function-specific invitation records
   if (valid.invitedEventIds.length > 0) {
-    const invitations = valid.invitedEventIds.map((eventId) => ({
-      event_id: eventId,
-      guest_id: guestData.id,
-      status: "invited",
-    }));
+    // Only map valid UUID event IDs to prevent foreign key errors if mock ceremony IDs were passed
+    const uuidEventIds = valid.invitedEventIds.filter((id) =>
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
+    );
 
-    await (supabase.from("event_invitations") as unknown as {
-      insert: (values: unknown[]) => Promise<{ error: unknown }>;
-    }).insert(invitations);
+    if (uuidEventIds.length > 0) {
+      const invitations = uuidEventIds.map((eventId) => ({
+        event_id: eventId,
+        guest_id: guestData.id,
+        status: "invited",
+      }));
+
+      await (supabase.from("event_invitations") as unknown as {
+        insert: (values: unknown[]) => Promise<{ error: unknown }>;
+      }).insert(invitations);
+    }
   }
 
   revalidatePath("/dashboard/guests");
