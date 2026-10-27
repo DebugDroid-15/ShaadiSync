@@ -165,6 +165,149 @@ ${customMessage ? customMessage + "\n\n" : ""}ଦୟାକରି ଆପଣଙ୍
 
 ଶୁଭେଚ୍ଛା ସହ,
 ପରିବାରବର୍ଗ 🙏`.trim();
+  } else if (language === "as") {
+    messageText = `নমস্কাৰ ${guestName} ডাঙৰীয়া 🙏,
+
+পৰম আনন্দৰে আমি আপোনাক আৰু আপোনাৰ পৰিয়ালক *${city}* ত অনুষ্ঠিত *${coupleTitle}* ৰ শুভ বিবাহলৈ আন্তৰিক নিমন্ত্ৰণ জনাইছোঁ। আৰম্ভণি: *${formatDate(startDate)}*।
+
+আপুনি সাদৰে নিমন্ত্ৰিত:
+${ceremonyList}
+
+${customMessage ? customMessage + "\n\n" : ""}অনুগ্ৰহ কৰি আপোনাৰ উপস্থিতি আৰু আহাৰৰ পছন্দ তলৰ লিংকত নিশ্চিত কৰক:
+🔗 ${rsvpUrl}
+
+শুভকামনাৰে,
+পৰিয়ালবৰ্গ 🙏`.trim();
+  } else if (language === "ur") {
+    messageText = `آداب ${guestName} صاحب 🙏,
+
+بڑی مسرت کے ساتھ ہم آپ کو اور آپ کے اہل خانہ کو *${city}* میں منعقد ہونے والی *${coupleTitle}* کی شادی کی پرمسرت تقریب میں شرکت کی دلی دعوت پیش کرتے ہیں۔ آغاز: *${formatDate(startDate)}*۔
+
+آپ کی شرکت کے منتظر تقاریب:
+${ceremonyList}
+
+${customMessage ? customMessage + "\n\n" : ""}براہ کرم اپنی شرکت اور طعام کی پسند کی تصدیق نیچے دیے گئے لنک پر فرمائیں:
+🔗 ${rsvpUrl}
+
+نیک تمناؤں کے ساتھ،
+جملہ خاندان 🙏`.trim();
+  } else if (language === "sa") {
+    messageText = `नमो नमः ${guestName} महोदय 🙏,
+
+अतीव सानंदं वयं भवन्तं सपरिवारं च *${city}* मध्ये आयोज्यमाने *${coupleTitle}* इत्यस्य शुभविवाहसमारोहे सस्नेहं निमन्त्रयामः। समारोहारम्भः: *${formatDate(startDate)}*।
+
+भवन्तः सादरं निमन्त्रिन्ते:
+${ceremonyList}
+
+${customMessage ? customMessage + "\n\n" : ""}कृपया स्वोपस्थितिं भोजनरुचिं च अधोनिर्दिष्टे सम्पर्कतन्तौ निश्चिनोतु:
+🔗 ${rsvpUrl}
+
+सस्नेहं सादरं च,
+परिवारजनाः 🙏`.trim();
+  } else if (language === "ks") {
+    messageText = `آداب / नमस्कार ${guestName} जी 🙏,
+
+بڑی خوشی سٟتؠ چھِ أسی تُہند تہٕ تُہندِس خانٛدانس *${city}* منٛز منعقد گژھن والی *${coupleTitle}* سٕنٛزِ خانٛدرٕکہِ تقریب مَنٛز شرکتٕچ دعوت دِوان۔ آغاز: *${formatDate(startDate)}*۔
+
+توہی چھُو احترام سان مدعو:
+${ceremonyList}
+
+${customMessage ? customMessage + "\n\n" : ""}مہربانی کٔرِتھ پنٕنؠ شرکت تہٕ کھؠنٕچ پسند یَتھ لنک پؠٹھ تصدیق کٔرِو:
+🔗 ${rsvpUrl}
+
+نیک خواہشات سٟتؠ،
+پروار 🙏`.trim();
+  } else if (language === "sd") {
+    messageText = `جهولي لال / السلام عليكم ${guestName} سائين 🙏,
+
+ڏاڍي خوشي سان اسين اوهان کي ۽ اوهان جي خاندان کي *${city}* ۾ ٿيندڙ *${coupleTitle}* جي مبارڪ شادي جي تقريبن ۾ شريڪ ٿيڻ جي سڏ ڏيون ٿا. تاريخ: *${formatDate(startDate)}*۔
+
+توهان کي سڪ سان سڏ آهي:
+${ceremonyList}
+
+${customMessage ? customMessage + "\n\n" : ""}مهرباني ڪري پنهنجي موجودگي ۽ طعام جي چونڊ هيٺ ڏنل لنڪ ذريعي ضرور پڪ ڪريو:
+🔗 ${rsvpUrl}
+
+نيڪ تمنائون ۽ سلام,
+خاندان 🙏`.trim();
+  } else if (language === "ne") {
+    messageText = `नमस्ते ${guestName} ज्यू 🙏,
+
+अत्यन्त खुसीका साथ हामी तपाईं र तपाईंको परिवारलाई *${city}* मा आयोजना हुन गइरहेको *${coupleTitle}* को शुभ विवाह समारोहमा हार्दिक निमन्त्रणा गर्दछौं। प्रारम्भ मिति: *${formatDate(startDate)}*।
+
+तपाईं सादर आमन्त्रित हुनुहुन्छ:
+${ceremonyList}
+
+${customMessage ? customMessage + "\n\n" : ""}कृपया आफ्नो उपस्थिति र खानपानको प्राथमिकता तल दिइएको लिंकमा दर्ता गर्नुहोला:
+🔗 ${rsvpUrl}
+
+हार्दिक शुभकामना सहित,
+सम्पूर्ण परिवार 🙏`.trim();
+  } else if (language === "kok") {
+    messageText = `नमस्कार ${guestName} बाब/बाय 🙏,
+
+खूब खोशयेन आम्ही तुमकां आनी तुमच्या कुटुंबाक *${city}* हांगा जावपी *${coupleTitle}* हांच्या शुभ लग्न कार्याक मोगान आमंत्रण दितात। सुर्वात: *${formatDate(startDate)}*।
+
+तुमकां मोगाचें निमंत्रण:
+${ceremonyList}
+
+${customMessage ? customMessage + "\n\n" : ""}उपकार करून तुमची उपस्थिती आनी जेवणाची पसंती सकयल्या लिंकचेर कळयात:
+🔗 ${rsvpUrl}
+
+मोगाचे नमस्कार,
+सगळें कुटुंब 🙏`.trim();
+  } else if (language === "mai") {
+    messageText = `प्रणाम ${guestName} जी 🙏,
+
+अतिशय प्रसन्नता पूर्वक हम अहाँकेँ आ अहाँक परिवारकेँ *${city}* मे आयोजित *${coupleTitle}* क शुभ विवाह समारोह मे सादर निमंत्रित करैत छी। शुभारंभ: *${formatDate(startDate)}*।
+
+अहाँ सस्नेह आमंत्रित छी:
+${ceremonyList}
+
+${customMessage ? customMessage + "\n\n" : ""}कृपा कऽ अपन उपस्थिति आ भोजनक प्राथमिकता एहि लिंक पर दर्ज करू:
+🔗 ${rsvpUrl}
+
+हार्दिक मंगलकामना आ सादर प्रणाम,
+समस्त परिवार 🙏`.trim();
+  } else if (language === "bho") {
+    messageText = `प्रणाम ${guestName} जी 🙏,
+
+बड़ा आनंद के साथ हम रउवा के आ रउवा के पूरा परिवार के *${city}* में आयोजित *${coupleTitle}* के शुभ बियाह में सादर नेवता दे रहल बानी। शुरुआत: *${formatDate(startDate)}*।
+
+रउवा सप्रेम आमंत्रित बानी:
+${ceremonyList}
+
+${customMessage ? customMessage + "\n\n" : ""}कृपा कऽ के आपन उपस्थिति आ भोजन पसंद एह लिंक पर दर्ज करीं:
+🔗 ${rsvpUrl}
+
+रउवा के आवे के आस में,
+सभ परिवार 🙏`.trim();
+  } else if (language === "raj") {
+    messageText = `खम्मा घणी ${guestName} सा 🙏,
+
+घणी खुस्यां सागे म्हे आपणे आैर आपरे सगळा परिवार ने *${city}* मांय आयोजित *${coupleTitle}* रा शुभ ब्याव समारोह में घणी मनुहार सागे निमंत्रण देवां सा। शुभारंभ: *${formatDate(startDate)}*।
+
+आप सस्नेह निमंत्रित हो:
+${ceremonyList}
+
+${customMessage ? customMessage + "\n\n" : ""}घणी मनुहार है, आपरी पधारबा री सूचना आैर जीमण री पसंद ऐ लिंक माथे दर्ज करावो सा:
+🔗 ${rsvpUrl}
+
+आपरे पधारबा री उडीक में,
+सगळो परिवार 🙏`.trim();
+  } else if (language === "doi") {
+    messageText = `नमस्ते ${guestName} जी 🙏,
+
+बड़ी खुशी कन्ने असां तुसेंगी ते तुंदे सारे परिवारे गी *${city}* च होंदे *${coupleTitle}* दे शुभ ब्याह समारोह च सस्नेह निमंत्रण दिने आं। शुरुआत: *${formatDate(startDate)}*।
+
+तुस सादर आमंत्रित ओ:
+${ceremonyList}
+
+${customMessage ? customMessage + "\n\n" : ""}किरपा करियै अपनी मौजूदगी ते खाने दी पसंद हेठ दित्ती दी लिंक पर दर्ज कराओ:
+🔗 ${rsvpUrl}
+
+हार्दिक शुभकामनाएं ते सादर प्रणाम,
+सब्भे परिवारी जन 🙏`.trim();
   } else {
     // English default
     messageText = `Namaste ${guestName} ji 🙏,
