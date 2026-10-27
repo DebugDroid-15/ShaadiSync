@@ -88,9 +88,9 @@ function safeSet<T>(key: string, value: T): void {
 }
 
 export const ShaadiStorage = {
-  // Check active mode
+  // Check active mode: defaults to "clean" so fresh loads are not clogged with dummy data
   getDataMode(): "clean" | "demo" | "custom" {
-    return safeGet<"clean" | "demo" | "custom">(STORAGE_KEYS.DATA_MODE, "demo");
+    return safeGet<"clean" | "demo" | "custom">(STORAGE_KEYS.DATA_MODE, "clean");
   },
 
   // 1. CLEAR ALL DATA (Clean slate for custom testing)
@@ -104,12 +104,10 @@ export const ShaadiStorage = {
     safeSet(STORAGE_KEYS.VENDORS, []);
     safeSet(STORAGE_KEYS.BUDGET, {
       totalBudget: 0,
-      totalExpenses: 0,
-      totalPaid: 0,
+      totalActual: 0,
+      advancePaid: 0,
       balanceDue: 0,
-      variancePercentage: 0,
-      isOverBudget: false,
-      currency: "INR",
+      variance: 0,
       categories: [],
     });
     safeSet(STORAGE_KEYS.EXPENSES, []);
@@ -122,14 +120,16 @@ export const ShaadiStorage = {
     safeSet(STORAGE_KEYS.ROOM_INVENTORY, []);
     safeSet(STORAGE_KEYS.ROOM_ALLOCATIONS, []);
     safeSet(STORAGE_KEYS.LOGISTICS_SUMMARY, {
-      totalGuestsRequiringStay: 0,
-      totalRoomsAllocated: 0,
-      totalRoomsAvailable: 0,
-      totalArrivalTrips: 0,
-      totalDepartureTrips: 0,
-      totalVehiclesActive: 0,
-      totalParkingSlotsAllocated: 0,
-      totalParkingSlotsAvailable: 0,
+      parking: { totalCapacity: 0, allocatedSpaces: 0, remainingCapacity: 0, utilisationPercentage: 0 },
+      transport: { activeTrips: 0, totalSeatCapacity: 0, assignedPassengers: 0, availableSeats: 0 },
+      accommodation: {
+        totalRooms: 0,
+        occupiedRooms: 0,
+        vacantRooms: 0,
+        occupancyRate: 0,
+        upcomingArrivals: 0,
+        upcomingDepartures: 0,
+      },
     });
     safeSet(STORAGE_KEYS.ATTENDANCE_DASHBOARDS, {});
     safeSet(STORAGE_KEYS.ATTENDANCE_RECORDS, []);
@@ -164,7 +164,7 @@ export const ShaadiStorage = {
   // Weddings
   getWeddings(): Wedding[] {
     const isInit = safeGet<string | null>(STORAGE_KEYS.INITIALIZED, null);
-    if (!isInit) return MOCK_WEDDINGS;
+    if (!isInit) return [];
     return safeGet<Wedding[]>(STORAGE_KEYS.WEDDINGS, []);
   },
   saveWeddings(weddings: Wedding[]): void {
@@ -175,7 +175,7 @@ export const ShaadiStorage = {
   // Functions / Ceremonies
   getFunctions(): WeddingFunction[] {
     const isInit = safeGet<string | null>(STORAGE_KEYS.INITIALIZED, null);
-    if (!isInit) return MOCK_FUNCTIONS;
+    if (!isInit) return [];
     return safeGet<WeddingFunction[]>(STORAGE_KEYS.FUNCTIONS, []);
   },
   saveFunctions(fns: WeddingFunction[]): void {
@@ -186,7 +186,7 @@ export const ShaadiStorage = {
   // Guests
   getGuests(): Guest[] {
     const isInit = safeGet<string | null>(STORAGE_KEYS.INITIALIZED, null);
-    if (!isInit) return MOCK_GUESTS;
+    if (!isInit) return [];
     return safeGet<Guest[]>(STORAGE_KEYS.GUESTS, []);
   },
   saveGuests(guests: Guest[]): void {
@@ -197,7 +197,7 @@ export const ShaadiStorage = {
   // Catering
   getCateringPlans(): CateringPlan[] {
     const isInit = safeGet<string | null>(STORAGE_KEYS.INITIALIZED, null);
-    if (!isInit) return MOCK_CATERING_PLANS;
+    if (!isInit) return [];
     return safeGet<CateringPlan[]>(STORAGE_KEYS.CATERING, []);
   },
   saveCateringPlans(plans: CateringPlan[]): void {
@@ -208,7 +208,7 @@ export const ShaadiStorage = {
   // Vendors
   getVendors(): Vendor[] {
     const isInit = safeGet<string | null>(STORAGE_KEYS.INITIALIZED, null);
-    if (!isInit) return MOCK_VENDORS;
+    if (!isInit) return [];
     return safeGet<Vendor[]>(STORAGE_KEYS.VENDORS, []);
   },
   saveVendors(vendors: Vendor[]): void {
@@ -219,8 +219,16 @@ export const ShaadiStorage = {
   // Budget
   getBudget(): BudgetSummary {
     const isInit = safeGet<string | null>(STORAGE_KEYS.INITIALIZED, null);
-    if (!isInit) return MOCK_BUDGET;
-    return safeGet<BudgetSummary>(STORAGE_KEYS.BUDGET, MOCK_BUDGET);
+    const emptyBudget: BudgetSummary = {
+      totalBudget: 0,
+      totalActual: 0,
+      advancePaid: 0,
+      balanceDue: 0,
+      variance: 0,
+      categories: [],
+    };
+    if (!isInit) return emptyBudget;
+    return safeGet<BudgetSummary>(STORAGE_KEYS.BUDGET, emptyBudget);
   },
   saveBudget(budget: BudgetSummary): void {
     safeSet(STORAGE_KEYS.BUDGET, budget);
@@ -230,7 +238,7 @@ export const ShaadiStorage = {
   // Expenses
   getExpenses(): Expense[] {
     const isInit = safeGet<string | null>(STORAGE_KEYS.INITIALIZED, null);
-    if (!isInit) return MOCK_EXPENSES;
+    if (!isInit) return [];
     return safeGet<Expense[]>(STORAGE_KEYS.EXPENSES, []);
   },
   saveExpenses(expenses: Expense[]): void {
@@ -241,7 +249,7 @@ export const ShaadiStorage = {
   // Payments
   getPayments(): PaymentRecord[] {
     const isInit = safeGet<string | null>(STORAGE_KEYS.INITIALIZED, null);
-    if (!isInit) return MOCK_PAYMENTS;
+    if (!isInit) return [];
     return safeGet<PaymentRecord[]>(STORAGE_KEYS.PAYMENTS, []);
   },
   savePayments(payments: PaymentRecord[]): void {
@@ -252,7 +260,7 @@ export const ShaadiStorage = {
   // Tasks
   getTasks(): TaskItem[] {
     const isInit = safeGet<string | null>(STORAGE_KEYS.INITIALIZED, null);
-    if (!isInit) return MOCK_TASKS;
+    if (!isInit) return [];
     return safeGet<TaskItem[]>(STORAGE_KEYS.TASKS, []);
   },
   saveTasks(tasks: TaskItem[]): void {
@@ -263,12 +271,12 @@ export const ShaadiStorage = {
   // Logistics: Parking
   getParkingAreas(): ParkingArea[] {
     const isInit = safeGet<string | null>(STORAGE_KEYS.INITIALIZED, null);
-    if (!isInit) return MOCK_PARKING_AREAS;
+    if (!isInit) return [];
     return safeGet<ParkingArea[]>(STORAGE_KEYS.PARKING_AREAS, []);
   },
   getParkingAllocations(): ParkingAllocation[] {
     const isInit = safeGet<string | null>(STORAGE_KEYS.INITIALIZED, null);
-    if (!isInit) return MOCK_PARKING_ALLOCATIONS;
+    if (!isInit) return [];
     return safeGet<ParkingAllocation[]>(STORAGE_KEYS.PARKING_ALLOCATIONS, []);
   },
   saveParkingAllocations(allocations: ParkingAllocation[]): void {
@@ -279,7 +287,7 @@ export const ShaadiStorage = {
   // Logistics: Transport
   getTransportTrips(): TransportTrip[] {
     const isInit = safeGet<string | null>(STORAGE_KEYS.INITIALIZED, null);
-    if (!isInit) return MOCK_TRANSPORT_TRIPS;
+    if (!isInit) return [];
     return safeGet<TransportTrip[]>(STORAGE_KEYS.TRANSPORT_TRIPS, []);
   },
   saveTransportTrips(trips: TransportTrip[]): void {
@@ -290,17 +298,17 @@ export const ShaadiStorage = {
   // Logistics: Accommodations & Rooms
   getAccommodationProperties(): AccommodationProperty[] {
     const isInit = safeGet<string | null>(STORAGE_KEYS.INITIALIZED, null);
-    if (!isInit) return MOCK_ACCOMMODATION_PROPERTIES;
+    if (!isInit) return [];
     return safeGet<AccommodationProperty[]>(STORAGE_KEYS.ACCOMMODATION_PROPERTIES, []);
   },
   getRoomInventory(): RoomInventory[] {
     const isInit = safeGet<string | null>(STORAGE_KEYS.INITIALIZED, null);
-    if (!isInit) return MOCK_ROOM_INVENTORY;
+    if (!isInit) return [];
     return safeGet<RoomInventory[]>(STORAGE_KEYS.ROOM_INVENTORY, []);
   },
   getRoomAllocations(): RoomAllocation[] {
     const isInit = safeGet<string | null>(STORAGE_KEYS.INITIALIZED, null);
-    if (!isInit) return MOCK_ROOM_ALLOCATIONS;
+    if (!isInit) return [];
     return safeGet<RoomAllocation[]>(STORAGE_KEYS.ROOM_ALLOCATIONS, []);
   },
   saveRoomAllocations(allocations: RoomAllocation[]): void {
@@ -311,14 +319,26 @@ export const ShaadiStorage = {
   // Logistics Summary
   getLogisticsSummary(): LogisticsSummary {
     const isInit = safeGet<string | null>(STORAGE_KEYS.INITIALIZED, null);
-    if (!isInit) return MOCK_LOGISTICS_SUMMARY;
-    return safeGet<LogisticsSummary>(STORAGE_KEYS.LOGISTICS_SUMMARY, MOCK_LOGISTICS_SUMMARY);
+    const emptyLogistics: LogisticsSummary = {
+      parking: { totalCapacity: 0, allocatedSpaces: 0, remainingCapacity: 0, utilisationPercentage: 0 },
+      transport: { activeTrips: 0, totalSeatCapacity: 0, assignedPassengers: 0, availableSeats: 0 },
+      accommodation: {
+        totalRooms: 0,
+        occupiedRooms: 0,
+        vacantRooms: 0,
+        occupancyRate: 0,
+        upcomingArrivals: 0,
+        upcomingDepartures: 0,
+      },
+    };
+    if (!isInit) return emptyLogistics;
+    return safeGet<LogisticsSummary>(STORAGE_KEYS.LOGISTICS_SUMMARY, emptyLogistics);
   },
 
   // Attendance & Check-In
   getAttendanceDashboards(): Record<string, EventAttendanceDashboard> {
     const isInit = safeGet<string | null>(STORAGE_KEYS.INITIALIZED, null);
-    if (!isInit) return MOCK_ATTENDANCE_DASHBOARDS;
+    if (!isInit) return {};
     return safeGet<Record<string, EventAttendanceDashboard>>(STORAGE_KEYS.ATTENDANCE_DASHBOARDS, {});
   },
   saveAttendanceDashboards(dashboards: Record<string, EventAttendanceDashboard>): void {
@@ -327,7 +347,7 @@ export const ShaadiStorage = {
   },
   getAttendanceRecords(): AttendanceRecord[] {
     const isInit = safeGet<string | null>(STORAGE_KEYS.INITIALIZED, null);
-    if (!isInit) return MOCK_ATTENDANCE_RECORDS;
+    if (!isInit) return [];
     return safeGet<AttendanceRecord[]>(STORAGE_KEYS.ATTENDANCE_RECORDS, []);
   },
   saveAttendanceRecords(records: AttendanceRecord[]): void {
@@ -383,3 +403,4 @@ export const ShaadiStorage = {
     }
   },
 };
+

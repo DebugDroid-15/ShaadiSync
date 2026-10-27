@@ -58,3 +58,4 @@ export function downloadIcsFile(event: {
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 }
+

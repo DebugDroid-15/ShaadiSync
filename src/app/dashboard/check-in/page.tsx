@@ -36,13 +36,17 @@ import {
   AttendanceRecord,
   CheckinGate,
   Guest,
+  WeddingFunction,
 } from "@/types/models";
 import { scanCheckinAction, manualCheckinAction } from "@/lib/actions/checkin";
 import { CameraQrScanner } from "@/components/check-in/camera-qr-scanner";
 import { gateAudio } from "@/lib/audio";
+import { ShaadiStorage } from "@/lib/shaadi-storage";
 
 export default function CheckInDeskPage() {
-  const [selectedFunctionId, setSelectedFunctionId] = React.useState<string>(MOCK_FUNCTIONS[0].id);
+  const [functions, setFunctions] = React.useState<WeddingFunction[]>([]);
+  const [guests, setGuests] = React.useState<Guest[]>([]);
+  const [selectedFunctionId, setSelectedFunctionId] = React.useState<string>("");
   const [activeTab, setActiveTab] = React.useState<"scanner" | "lookup" | "manifest">("scanner");
   const [passCodeInput, setPassCodeInput] = React.useState<string>("");
   const [searchQuery, setSearchQuery] = React.useState<string>("");
@@ -50,21 +54,19 @@ export default function CheckInDeskPage() {
   const [isSubmitting, setIsSubmitting] = React.useState<boolean>(false);
 
   // Dashboards & activity states
-  const [dashboard, setDashboard] = React.useState<EventAttendanceDashboard>(
-    MOCK_ATTENDANCE_DASHBOARDS[MOCK_FUNCTIONS[0].id] || {
-      eventId: MOCK_FUNCTIONS[0].id,
-      eventName: MOCK_FUNCTIONS[0].name,
-      totalEligibleGuests: 350,
-      confirmedRsvpCount: 310,
-      totalCheckedInCount: 185,
-      notCheckedInCount: 125,
-      ineligibleOrDeclinedCount: 40,
-      attendanceRate: 60,
-      recentActivity: MOCK_ATTENDANCE_RECORDS,
-    }
-  );
+  const [dashboard, setDashboard] = React.useState<EventAttendanceDashboard>({
+    eventId: "",
+    eventName: "No Ceremony Selected",
+    totalEligibleGuests: 0,
+    confirmedRsvpCount: 0,
+    totalCheckedInCount: 0,
+    notCheckedInCount: 0,
+    ineligibleOrDeclinedCount: 0,
+    attendanceRate: 0,
+    recentActivity: [],
+  });
 
-  const [recentRecords, setRecentRecords] = React.useState<AttendanceRecord[]>(dashboard.recentActivity);
+  const [recentRecords, setRecentRecords] = React.useState<AttendanceRecord[]>([]);
 
   // Status Alerts
   const [scanResult, setScanResult] = React.useState<{
@@ -78,19 +80,45 @@ export default function CheckInDeskPage() {
   const [overrideGuest, setOverrideGuest] = React.useState<Guest | null>(null);
   const [overrideReason, setOverrideReason] = React.useState<string>("");
 
-  const activeFunction = MOCK_FUNCTIONS.find((f) => f.id === selectedFunctionId) || MOCK_FUNCTIONS[0];
+  React.useEffect(() => {
+    const fns = ShaadiStorage.getFunctions();
+    const gsts = ShaadiStorage.getGuests();
+    setFunctions(fns);
+    setGuests(gsts);
+    if (fns.length > 0) {
+      setSelectedFunctionId(fns[0].id);
+      const dashboards = ShaadiStorage.getAttendanceDashboards();
+      const fnDash = dashboards[fns[0].id] || {
+        eventId: fns[0].id,
+        eventName: fns[0].name,
+        totalEligibleGuests: gsts.filter(g => g.invitedFunctionIds.includes(fns[0].id)).length,
+        confirmedRsvpCount: fns[0].confirmedRsvp,
+        totalCheckedInCount: 0,
+        notCheckedInCount: fns[0].confirmedRsvp,
+        ineligibleOrDeclinedCount: 0,
+        attendanceRate: 0,
+        recentActivity: [],
+      };
+      setDashboard(fnDash);
+      setRecentRecords(fnDash.recentActivity);
+    }
+  }, []);
+
+  const activeFunction = functions.find((f) => f.id === selectedFunctionId);
 
   const handleFunctionChange = (fnId: string) => {
     setSelectedFunctionId(fnId);
     setScanResult(null);
-    const newDash = MOCK_ATTENDANCE_DASHBOARDS[fnId] || {
+    const targetFn = functions.find(f => f.id === fnId);
+    const dashboards = ShaadiStorage.getAttendanceDashboards();
+    const newDash = dashboards[fnId] || {
       eventId: fnId,
-      eventName: MOCK_FUNCTIONS.find((f) => f.id === fnId)?.name || "Ceremony Event",
-      totalEligibleGuests: 150,
-      confirmedRsvpCount: 120,
+      eventName: targetFn?.name || "Ceremony Event",
+      totalEligibleGuests: guests.filter(g => g.invitedFunctionIds.includes(fnId)).length,
+      confirmedRsvpCount: targetFn?.confirmedRsvp || 0,
       totalCheckedInCount: 0,
-      notCheckedInCount: 120,
-      ineligibleOrDeclinedCount: 30,
+      notCheckedInCount: targetFn?.confirmedRsvp || 0,
+      ineligibleOrDeclinedCount: 0,
       attendanceRate: 0,
       recentActivity: [],
     };
@@ -134,7 +162,7 @@ export default function CheckInDeskPage() {
         setScanResult({
           type: "success",
           title: "✅ Admission Confirmed",
-          description: `${admittedName} (${admittedCount} Attendee${admittedCount > 1 ? "s" : ""}) admitted to ${activeFunction.name}.`,
+          description: `${admittedName} (${admittedCount} Attendee${admittedCount > 1 ? "s" : ""}) admitted to ${activeFunction ? activeFunction.name : "Ceremony"}.`,
           timestamp: new Date().toLocaleTimeString(),
         });
         setPassCodeInput("");
@@ -215,10 +243,12 @@ export default function CheckInDeskPage() {
   // Export CSV
   const handleExportCSV = () => {
     const headers = ["Timestamp", "Guest Name", "Event", "Method", "Admitted Count", "Gate", "Operator Notes"];
+    const ceremonyName = activeFunction ? activeFunction.name : "Ceremony";
+    const ceremonyType = activeFunction ? activeFunction.eventType : "event";
     const rows = recentRecords.map((r) => [
       `"${r.checkinTime}"`,
       `"${(r.guestName || "Guest").replace(/"/g, '""')}"`,
-      `"${activeFunction.name.replace(/"/g, '""')}"`,
+      `"${ceremonyName.replace(/"/g, '""')}"`,
       r.checkinMethod,
       String(r.admittedCount),
       `"${r.gateName || "Gate Desk"}"`,
@@ -230,13 +260,13 @@ export default function CheckInDeskPage() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `ShaadiSync_Attendance_${activeFunction.eventType}_${new Date().toISOString().split("T")[0]}.csv`);
+    link.setAttribute("download", `ShaadiSync_Attendance_${ceremonyType}_${new Date().toISOString().split("T")[0]}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
-  const eligibleGuests = MOCK_GUESTS.filter((g) =>
+  const eligibleGuests = guests.filter((g) =>
     g.invitedFunctionIds.includes(selectedFunctionId)
   );
 
@@ -274,11 +304,15 @@ export default function CheckInDeskPage() {
               onChange={(e) => handleFunctionChange(e.target.value)}
               className="bg-navy-800 text-white border border-gold-300/30 text-sm rounded-lg px-3 py-2 w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-gold-400"
             >
-              {MOCK_FUNCTIONS.map((fn) => (
-                <option key={fn.id} value={fn.id} className="bg-navy-900 text-white">
-                  {fn.name}
-                </option>
-              ))}
+              {functions.length === 0 ? (
+                <option value="">No Ceremonies Found</option>
+              ) : (
+                functions.map((fn) => (
+                  <option key={fn.id} value={fn.id} className="bg-navy-900 text-white">
+                    {fn.name}
+                  </option>
+                ))
+              )}
             </select>
           </div>
 
@@ -551,7 +585,7 @@ export default function CheckInDeskPage() {
           <CardHeader className="border-b border-slate-100">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <CardTitle className="text-base font-bold text-navy-900">
-                Eligible Guest Roster for {activeFunction.name}
+                Eligible Guest Roster for {activeFunction ? activeFunction.name : "Ceremony"}
               </CardTitle>
               <div className="relative w-full sm:w-72">
                 <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />

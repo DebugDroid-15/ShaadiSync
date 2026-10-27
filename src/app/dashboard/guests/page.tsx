@@ -7,8 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Dialog } from "@/components/ui/dialog";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
-import { MOCK_GUESTS, MOCK_FUNCTIONS, MOCK_WEDDINGS } from "@/lib/mock-data";
-import { Guest, WeddingFunction } from "@/types/models";
+import { Guest, WeddingFunction, Wedding } from "@/types/models";
 import { validateGuestCsv, exportGuestsToCsv } from "@/lib/csv";
 import { createGuestAction, bulkImportGuestsAction, deleteGuestAction } from "@/lib/actions/guests";
 import { InviteShareModal } from "@/components/dashboard/invite-share-modal";
@@ -17,6 +16,7 @@ import { ShaadiStorage } from "@/lib/shaadi-storage";
 export default function GuestsPage() {
   const [guests, setGuests] = React.useState<Guest[]>([]);
   const [functions, setFunctions] = React.useState<WeddingFunction[]>([]);
+  const [activeWedding, setActiveWedding] = React.useState<Wedding | null>(null);
   const [searchQuery, setSearchQuery] = React.useState("");
   const [selectedSide, setSelectedSide] = React.useState<string>("all");
   const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
@@ -31,9 +31,9 @@ export default function GuestsPage() {
   React.useEffect(() => {
     setGuests(ShaadiStorage.getGuests());
     setFunctions(ShaadiStorage.getFunctions());
+    const weds = ShaadiStorage.getWeddings();
+    setActiveWedding(weds.length > 0 ? weds[0] : null);
   }, []);
-
-  const activeWedding = MOCK_WEDDINGS[0];
 
   const filteredGuests = guests.filter((g) => {
     const matchesSearch =
@@ -65,7 +65,7 @@ export default function GuestsPage() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", `ShaadiSync_Guests_${activeWedding.slug}.csv`);
+    link.setAttribute("download", `ShaadiSync_Guests_${activeWedding ? activeWedding.slug : "wedding"}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -84,14 +84,16 @@ export default function GuestsPage() {
       return;
     }
 
+    const weddingId = activeWedding?.id || "wed-default";
+
     try {
-      const result = await bulkImportGuestsAction(activeWedding.id, validation.validRows, csvTargetEvents);
+      const result = await bulkImportGuestsAction(weddingId, validation.validRows, csvTargetEvents);
       if (!result.success) {
         setError(result.error || "CSV import failed.");
       } else {
         const newGuests: Guest[] = validation.validRows.map((r, i) => ({
           id: "imported-" + Date.now() + "-" + i,
-          weddingId: activeWedding.id,
+          weddingId: weddingId,
           firstName: r.firstName,
           lastName: r.lastName,
           side: r.side,
@@ -124,8 +126,9 @@ export default function GuestsPage() {
     setLoading(true);
     setError(null);
 
+    const weddingId = activeWedding?.id || "wed-default";
     const formData = new FormData(e.currentTarget);
-    formData.set("weddingId", activeWedding.id);
+    formData.set("weddingId", weddingId);
 
     try {
       const result = await createGuestAction(formData);
@@ -135,7 +138,7 @@ export default function GuestsPage() {
         const invitedEventIds = (formData.getAll("invitedEventIds") as string[]).filter(Boolean);
         const newGuest: Guest = {
           id: (result.data as { id?: string })?.id || "gst-" + Date.now(),
-          weddingId: activeWedding.id,
+          weddingId: weddingId,
           firstName: formData.get("firstName") as string,
           lastName: formData.get("lastName") as string,
           side: formData.get("side") as Guest["side"],
@@ -459,15 +462,17 @@ export default function GuestsPage() {
       </Dialog>
 
       {/* WhatsApp Share & Reminder Dialog */}
-      <InviteShareModal
-        isOpen={Boolean(shareGuest)}
-        onClose={() => setShareGuest(null)}
-        guest={shareGuest}
-        functions={functions}
-        weddingTitle={activeWedding.title}
-        startDate={activeWedding.startDate}
-        city={activeWedding.primaryCity}
-      />
+      {activeWedding && (
+        <InviteShareModal
+          isOpen={Boolean(shareGuest)}
+          onClose={() => setShareGuest(null)}
+          guest={shareGuest}
+          functions={functions}
+          weddingTitle={activeWedding.title}
+          startDate={activeWedding.startDate}
+          city={activeWedding.primaryCity}
+        />
+      )}
     </div>
   );
 }

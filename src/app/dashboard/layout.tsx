@@ -19,15 +19,25 @@ import { Wedding } from "@/types/models";
 import { Badge } from "@/components/ui/badge";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 import { signOutAction } from "@/lib/actions/auth";
+import { ShaadiStorage } from "@/lib/shaadi-storage";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [activeWedding, setActiveWedding] = React.useState<Wedding>(MOCK_WEDDINGS[0]);
+  const [activeWedding, setActiveWedding] = React.useState<Wedding | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const isConfigured = React.useMemo(() => isSupabaseConfigured(), []);
+
+  React.useEffect(() => {
+    const weddings = ShaadiStorage.getWeddings();
+    if (weddings.length > 0) {
+      setActiveWedding(weddings[0]);
+    } else {
+      setActiveWedding(null);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">

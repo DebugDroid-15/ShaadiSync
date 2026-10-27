@@ -7,31 +7,32 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { MOCK_FUNCTIONS, MOCK_WEDDINGS } from "@/lib/mock-data";
-import { WeddingFunction } from "@/types/models";
+import { WeddingFunction, Wedding } from "@/types/models";
 import { formatDate, formatTime } from "@/lib/utils";
 import { createEventAction, deleteEventAction } from "@/lib/actions/events";
 import { ShaadiStorage } from "@/lib/shaadi-storage";
 
 export default function FunctionsPage() {
   const [functions, setFunctions] = React.useState<WeddingFunction[]>([]);
+  const [activeWedding, setActiveWedding] = React.useState<Wedding | null>(null);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     setFunctions(ShaadiStorage.getFunctions());
+    const weds = ShaadiStorage.getWeddings();
+    setActiveWedding(weds.length > 0 ? weds[0] : null);
   }, []);
-
-  const activeWedding = MOCK_WEDDINGS[0];
 
   async function handleCreate(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
+    const weddingId = activeWedding?.id || "wed-default";
     const formData = new FormData(e.currentTarget);
-    formData.set("weddingId", activeWedding.id);
+    formData.set("weddingId", weddingId);
 
     try {
       const result = await createEventAction(formData);
@@ -40,7 +41,7 @@ export default function FunctionsPage() {
       } else {
         const newFn: WeddingFunction = {
           id: (result.data as { id?: string })?.id || "fn-" + Date.now(),
-          weddingId: activeWedding.id,
+          weddingId: weddingId,
           name: formData.get("name") as string,
           eventType: formData.get("eventType") as WeddingFunction["eventType"],
           startTime: formData.get("startTime") as string,

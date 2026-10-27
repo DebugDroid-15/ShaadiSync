@@ -5,14 +5,29 @@ import { ChevronDown, CalendarHeart, MapPin, Sparkles, Plus } from "lucide-react
 import { MOCK_WEDDINGS } from "@/lib/mock-data";
 import { Wedding } from "@/types/models";
 import { formatDate } from "@/lib/utils";
+import { ShaadiStorage } from "@/lib/shaadi-storage";
 
 interface WeddingSwitcherProps {
-  activeWedding: Wedding;
+  activeWedding: Wedding | null;
   onSelectWedding: (wedding: Wedding) => void;
 }
 
 export function WeddingSwitcher({ activeWedding, onSelectWedding }: WeddingSwitcherProps) {
   const [isOpen, setIsOpen] = React.useState(false);
+  const [weddings, setWeddings] = React.useState<Wedding[]>([]);
+
+  React.useEffect(() => {
+    setWeddings(ShaadiStorage.getWeddings());
+  }, []);
+
+  if (!activeWedding) {
+    return (
+      <div className="flex items-center gap-2 rounded-xl border border-dashed border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-500">
+        <CalendarHeart className="h-4 w-4 text-slate-400" />
+        <span>No Active Wedding</span>
+      </div>
+    );
+  }
 
   return (
     <div className="relative">
@@ -52,7 +67,7 @@ export function WeddingSwitcher({ activeWedding, onSelectWedding }: WeddingSwitc
               Active Weddings
             </p>
             <div className="space-y-1">
-              {MOCK_WEDDINGS.map((wedding) => (
+              {weddings.map((wedding) => (
                 <button
                   key={wedding.id}
                   onClick={() => {
