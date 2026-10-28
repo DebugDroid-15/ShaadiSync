@@ -29,37 +29,67 @@ export default function GuestsPage() {
   const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    setGuests(ShaadiStorage.getGuests());
+    const localGuests = ShaadiStorage.getGuests();
+    setGuests(localGuests);
     setFunctions(ShaadiStorage.getFunctions());
     const weds = ShaadiStorage.getWeddings();
     if (weds.length > 0) {
       setActiveWedding(weds[0]);
-    } else {
-      import("@/lib/actions/weddings").then(({ getWeddingsAction }) => {
-        getWeddingsAction().then((res) => {
-          if (res.success && Array.isArray(res.data) && res.data.length > 0) {
-            const liveWed = res.data[0];
-            const mapped: Wedding = {
-              id: liveWed.id,
-              organisationId: liveWed.organisation_id,
-              title: liveWed.title,
-              slug: liveWed.slug,
-              coupleBrideName: liveWed.couple_bride_name,
-              coupleGroomName: liveWed.couple_groom_name,
-              startDate: liveWed.start_date,
-              endDate: liveWed.end_date,
-              primaryCity: liveWed.primary_city,
-              totalBudget: Number(liveWed.total_budget || 0),
-              totalExpenses: 0,
-              totalGuests: 0,
-              totalFunctions: 0,
-              status: liveWed.status,
-            };
-            setActiveWedding(mapped);
-          }
-        });
-      });
     }
+
+    // Hydrate live data from Supabase if storage is clean or to sync real database tokens
+    import("@/lib/actions/weddings").then(({ getWeddingsAction }) => {
+      getWeddingsAction().then((res) => {
+        if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+          const liveWed = res.data[0];
+          const mapped: Wedding = {
+            id: liveWed.id,
+            organisationId: liveWed.organisation_id,
+            title: liveWed.title,
+            slug: liveWed.slug,
+            coupleBrideName: liveWed.couple_bride_name,
+            coupleGroomName: liveWed.couple_groom_name,
+            startDate: liveWed.start_date,
+            endDate: liveWed.end_date,
+            primaryCity: liveWed.primary_city,
+            totalBudget: Number(liveWed.total_budget || 0),
+            totalExpenses: 0,
+            totalGuests: 0,
+            totalFunctions: 0,
+            status: liveWed.status,
+          };
+          setActiveWedding(mapped);
+
+          // Fetch real guests with their database invitation tokens
+          import("@/lib/actions/guests").then(({ getGuestsAction }) => {
+            getGuestsAction(liveWed.id).then((guestRes) => {
+              if (guestRes.success && Array.isArray(guestRes.data) && guestRes.data.length > 0) {
+                const liveGuestList: Guest[] = (guestRes.data as Array<Record<string, unknown>>).map((g) => ({
+                  id: g.id as string,
+                  weddingId: g.wedding_id as string,
+                  firstName: g.first_name as string,
+                  lastName: g.last_name as string,
+                  side: g.side as Guest["side"],
+                  category: g.category as Guest["category"],
+                  ageGroup: g.age_group as Guest["ageGroup"],
+                  phone: (g.phone as string) || "",
+                  email: (g.email as string) || "",
+                  dietaryPreference: (g.dietary_pref as Guest["dietaryPreference"]) || "veg",
+                  allergies: (g.allergies_notes as string) || undefined,
+                  isVip: Boolean(g.is_vip),
+                  invitationToken: g.invitation_token as string,
+                  invitedFunctionIds: Array.isArray(g.event_invitations)
+                    ? (g.event_invitations as Array<{ event_id: string }>).map((ei) => ei.event_id)
+                    : [],
+                }));
+                setGuests(liveGuestList);
+                ShaadiStorage.saveGuests(liveGuestList);
+              }
+            });
+          });
+        }
+      });
+    });
   }, []);
 
   const filteredGuests = guests.filter((g) => {
@@ -163,8 +193,10 @@ export default function GuestsPage() {
         setError(result.error || "Failed to add guest");
       } else {
         const invitedEventIds = (formData.getAll("invitedEventIds") as string[]).filter(Boolean);
+        const serverGuest = result.data as { id?: string; invitation_token?: string; invitationToken?: string } | undefined;
+        const assignedToken = serverGuest?.invitation_token || serverGuest?.invitationToken || "tok_" + Math.random().toString(36).substring(2, 9);
         const newGuest: Guest = {
-          id: (result.data as { id?: string })?.id || "gst-" + Date.now(),
+          id: serverGuest?.id || "gst-" + Date.now(),
           weddingId: weddingId,
           firstName: formData.get("firstName") as string,
           lastName: formData.get("lastName") as string,
@@ -176,7 +208,7 @@ export default function GuestsPage() {
           dietaryPreference: formData.get("dietaryPref") as Guest["dietaryPreference"],
           allergies: (formData.get("allergiesNotes") as string) || undefined,
           isVip: formData.get("isVip") === "on",
-          invitationToken: "tok_" + Math.random().toString(36).substring(2, 9),
+          invitationToken: assignedToken,
           invitedFunctionIds: invitedEventIds,
         };
         const updated = [...guests, newGuest];

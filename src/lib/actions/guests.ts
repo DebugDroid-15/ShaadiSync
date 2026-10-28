@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import crypto from "crypto";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 import { guestSchema, householdSchema, type CsvGuestRow } from "@/lib/validations/events-guests";
 import { sanitizeText, sanitizePhoneNumber } from "@/lib/security/sanitizer";
@@ -22,7 +23,9 @@ export async function getGuestsAction(weddingId: string): Promise<GuestActionRes
     return { success: true, data: MOCK_GUESTS };
   }
 
-  const supabase = await createServerSupabaseClient();
+  const adminSupabase = createAdminClient();
+  const userSupabase = await createServerSupabaseClient();
+  const supabase = (adminSupabase || userSupabase) as any;
   if (!supabase) return { success: false, error: "Database client unavailable." };
 
   const { data, error } = await (supabase.from("guests") as unknown as {
@@ -143,7 +146,14 @@ export async function createGuestAction(formData: FormData): Promise<GuestAction
 
   revalidatePath("/dashboard/guests");
   revalidatePath("/dashboard");
-  return { success: true, data: guestData };
+  return {
+    success: true,
+    data: {
+      ...guestData,
+      invitation_token: invitationToken,
+      invitationToken: invitationToken,
+    },
+  };
 }
 
 /**
