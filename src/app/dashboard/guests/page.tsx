@@ -32,7 +32,34 @@ export default function GuestsPage() {
     setGuests(ShaadiStorage.getGuests());
     setFunctions(ShaadiStorage.getFunctions());
     const weds = ShaadiStorage.getWeddings();
-    setActiveWedding(weds.length > 0 ? weds[0] : null);
+    if (weds.length > 0) {
+      setActiveWedding(weds[0]);
+    } else {
+      import("@/lib/actions/weddings").then(({ getWeddingsAction }) => {
+        getWeddingsAction().then((res) => {
+          if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+            const liveWed = res.data[0];
+            const mapped: Wedding = {
+              id: liveWed.id,
+              organisationId: liveWed.organisation_id,
+              title: liveWed.title,
+              slug: liveWed.slug,
+              coupleBrideName: liveWed.couple_bride_name,
+              coupleGroomName: liveWed.couple_groom_name,
+              startDate: liveWed.start_date,
+              endDate: liveWed.end_date,
+              primaryCity: liveWed.primary_city,
+              totalBudget: Number(liveWed.total_budget || 0),
+              totalExpenses: 0,
+              totalGuests: 0,
+              totalFunctions: 0,
+              status: liveWed.status,
+            };
+            setActiveWedding(mapped);
+          }
+        });
+      });
+    }
   }, []);
 
   const filteredGuests = guests.filter((g) => {
@@ -462,17 +489,15 @@ export default function GuestsPage() {
       </Dialog>
 
       {/* WhatsApp Share & Reminder Dialog */}
-      {activeWedding && (
-        <InviteShareModal
-          isOpen={Boolean(shareGuest)}
-          onClose={() => setShareGuest(null)}
-          guest={shareGuest}
-          functions={functions}
-          weddingTitle={activeWedding.title}
-          startDate={activeWedding.startDate}
-          city={activeWedding.primaryCity}
-        />
-      )}
+      <InviteShareModal
+        isOpen={Boolean(shareGuest)}
+        onClose={() => setShareGuest(null)}
+        guest={shareGuest}
+        functions={functions}
+        weddingTitle={activeWedding?.title || "Aarav & Diya's Grand Wedding"}
+        startDate={activeWedding?.startDate || "2026-11-20"}
+        city={activeWedding?.primaryCity || "Udaipur"}
+      />
     </div>
   );
 }
